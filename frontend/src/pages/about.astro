@@ -1,85 +1,33 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
+import PageHero from '../components/PageHero.astro';
 import { SITE_TITLE } from '../consts';
+import Page from '../layouts/Page.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<!doctype html>
-<html lang="ko">
-	<head>
-		<BaseHead title={SITE_TITLE} description="김근언 자기소개" />
-		<style>
-			.card {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				padding: 3rem 1.5rem;
-				text-align: center;
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: 24px;
-				box-shadow: var(--shadow);
-			}
-			.logo {
-				width: 96px;
-				height: 96px;
-				border-radius: 26px;
-				box-shadow: 0 12px 40px rgba(124, 92, 255, 0.45);
-			}
-			h1 {
-				margin: 1.6rem 0 0.2rem;
-				font-size: 2rem;
-				font-weight: 800;
-			}
-			.id {
-				margin: 0;
-				font-size: 0.95rem;
-				color: var(--muted);
-			}
-			.intro {
-				margin: 1.6rem 0 0;
-				font-size: 1.15rem;
-			}
-			.links {
-				display: flex;
-				gap: 0.6rem;
-				margin-top: 1.8rem;
-			}
-			.links a {
-				padding: 0.45rem 1.1rem;
-				font-size: 0.92rem;
-				font-weight: 600;
-				color: var(--accent);
-				text-decoration: none;
-				background: var(--accent-soft);
-				border-radius: 999px;
-				transition: transform 0.15s ease;
-			}
-			.links a:hover {
-				transform: translateY(-2px);
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section class="card">
-				<img class="logo" src={`${base}/favicon.svg`} alt="gk 로고" width="96" height="96" />
-				<h1>김근언</h1>
-				<p class="id">@kimgeuneon</p>
-				<p class="intro">
-					안녕하세요. 김근언입니다.<br />
-					<span class="gradient-text"><strong>괴물 흡수 중.</strong></span>
-				</p>
-				<div class="links">
-					<a href="https://github.com/kimgeuneon" target="_blank" rel="noopener">GitHub</a>
-					<a href={`${base}/blog`}>블로그 글 보기</a>
-				</div>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+<Page title={SITE_TITLE} description="김근언 자기소개">
+	<PageHero eyebrow="ABOUT" lead="@kimgeuneon">
+		안녕하세요.<br />
+		김근언입니다.<br />
+		<span class="gradient-text">괴물이 되어가는 중.</span>
+	</PageHero>
+
+	<section>
+		<div class="section-head">
+			<h2>링크</h2>
+		</div>
+		<div class="card-grid">
+			<a class="card" href="https://github.com/kimgeuneon" target="_blank" rel="noopener">
+				<span class="card-meta">GitHub</span>
+				<h3 class="card-title">kimgeuneon</h3>
+				<span class="card-more">열기 →</span>
+			</a>
+			<a class="card" href={`${base}/blog`}>
+				<span class="card-meta">Blog</span>
+				<h3 class="card-title">모든 글 보기</h3>
+				<span class="card-more">열기 →</span>
+			</a>
+		</div>
+	</section>
+</Page>

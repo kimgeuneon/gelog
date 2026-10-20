@@ -1,10 +1,9 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
+import PageHero from '../components/PageHero.astro';
 import PostCard from '../components/PostCard.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import Page from '../layouts/Page.astro';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posts = (await getCollection('blog'))
@@ -12,78 +11,20 @@ const posts = (await getCollection('blog'))
 	.slice(0, 6);
 ---
 
-<!doctype html>
-<html lang="ko">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			.hero {
-				padding: 2.5rem 0 3.5rem;
-			}
-			.logo {
-				display: block;
-				width: 72px;
-				height: 72px;
-				margin-bottom: 1.6rem;
-				border-radius: 20px;
-				box-shadow: 0 10px 34px rgba(124, 92, 255, 0.42);
-			}
-			h1 {
-				margin: 0;
-				font-size: clamp(2.2rem, 6vw, 3.4rem);
-				font-weight: 800;
-				line-height: 1.2;
-				letter-spacing: -0.035em;
-			}
-			.sub {
-				margin: 1.1rem 0 0;
-				font-size: 1.1rem;
-				color: var(--muted);
-			}
-			.section-head {
-				display: flex;
-				align-items: baseline;
-				justify-content: space-between;
-				margin-bottom: 1.1rem;
-			}
-			.section-head h2 {
-				margin: 0;
-				font-size: 1.3rem;
-			}
-			.section-head a {
-				font-size: 0.92rem;
-				font-weight: 600;
-				text-decoration: none;
-			}
-			.grid {
-				display: grid;
-				gap: 1.1rem;
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section class="hero">
-				<img class="logo" src={`${base}/favicon.svg`} alt="gk 로고" width="72" height="72" />
-				<h1>
-					안녕하세요.<br />
-					김근언입니다.<br />
-					<span class="gradient-text">괴물 흡수 중.</span>
-				</h1>
-				<p class="sub">{SITE_TITLE} · {SITE_DESCRIPTION}</p>
-			</section>
+<Page title={SITE_TITLE} description={SITE_DESCRIPTION}>
+	<PageHero logo lead={`${SITE_TITLE} · ${SITE_DESCRIPTION}`}>
+		안녕하세요.<br />
+		김근언입니다.<br />
+		<span class="gradient-text">괴물이 되어가는 중.</span>
+	</PageHero>
 
-			<section>
-				<div class="section-head">
-					<h2>최근 글</h2>
-					<a href={`${base}/blog`}>전체 보기 →</a>
-				</div>
-				<div class="grid">
-					{posts.map((post) => <PostCard post={post} />)}
-				</div>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+	<section>
+		<div class="section-head">
+			<h2>최근 글</h2>
+			<a href={`${base}/blog`}>전체 보기 →</a>
+		</div>
+		<div class="card-grid">
+			{posts.map((post) => <PostCard post={post} />)}
+		</div>
+	</section>
+</Page>
