@@ -5,14 +5,12 @@ import Page from './Page.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate } = Astro.props;
-const fmt = (d: Date) =>
-	d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
-const date = updatedDate ? `${fmt(pubDate)} · 최종 수정 ${fmt(updatedDate)}` : fmt(pubDate);
+// pubDate / updatedDate 는 스키마(정렬·RSS용)에만 저장하고 화면에는 표시하지 않는다.
+const { title, description } = Astro.props;
 ---
 
 <Page title={title} description={description}>
-	<PageHero lead={`${date} · ${description}`}>
+	<PageHero lead={description}>
 		<span class="gradient-text">{title}</span>
 	</PageHero>
 
