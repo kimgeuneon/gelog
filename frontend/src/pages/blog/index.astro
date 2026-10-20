@@ -11,11 +11,15 @@ const posts = (await getCollection('blog')).sort(
 ---
 
 <Page title={SITE_TITLE} description={SITE_DESCRIPTION}>
-	<PageHero eyebrow="BLOG" lead={`글 ${posts.length}개`}>
+	<PageHero lead={`${SITE_TITLE} · 글 ${posts.length}개`}>
+		블로그<br />
 		<span class="gradient-text">모든 글</span>
 	</PageHero>
 
 	<section>
+		<div class="section-head">
+			<h2>전체 글</h2>
+		</div>
 		<div class="card-grid">
 			{posts.map((post) => <PostCard post={post} />)}
 		</div>

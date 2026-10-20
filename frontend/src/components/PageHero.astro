@@ -1,28 +1,19 @@
 ---
-type Props = {
-	eyebrow?: string;
-	lead?: string;
-	logo?: boolean;
-};
+type Props = { lead?: string };
 
-const { eyebrow, lead, logo = false } = Astro.props;
+const { lead } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <section class="hero">
-	{
-		logo && (
-			<img class="logo" src={`${base}/favicon.svg`} alt="gk 로고" width="72" height="72" />
-		)
-	}
-	{eyebrow && <span class="eyebrow">{eyebrow}</span>}
+	<img class="logo" src={`${base}/favicon.svg`} alt="gk 로고" width="72" height="72" />
 	<h1><slot /></h1>
 	{lead && <p class="lead">{lead}</p>}
 </section>
 
 <style>
 	.hero {
-		padding: 1.5rem 0 3rem;
+		padding: 2.5rem 0 3.5rem;
 	}
 	.logo {
 		display: block;
@@ -31,17 +22,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		margin-bottom: 1.6rem;
 		border-radius: 20px;
 		box-shadow: 0 10px 34px rgba(124, 92, 255, 0.42);
-	}
-	.eyebrow {
-		display: inline-block;
-		margin-bottom: 1rem;
-		padding: 0.25rem 0.85rem;
-		font-size: 0.8rem;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		color: var(--accent);
-		background: var(--accent-soft);
-		border-radius: 999px;
 	}
 	h1 {
 		margin: 0;
