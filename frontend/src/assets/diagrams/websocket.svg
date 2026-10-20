@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 360" width="800" height="360" font-family="-apple-system,Helvetica,Arial,sans-serif" font-size="16">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#2337ff"/></marker></defs>
+<rect width="800" height="360" rx="14" fill="#ffffff" stroke="#e5e9f0"/>
+<rect x="80" y="20" width="160" height="44" rx="10" fill="#eef0ff" stroke="#2337ff" stroke-width="1.5"/>
+<text x="160.0" y="47.0" text-anchor="middle" font-weight="700" fill="#0f1219">Client</text>
+<rect x="560" y="20" width="160" height="44" rx="10" fill="#eef0ff" stroke="#2337ff" stroke-width="1.5"/>
+<text x="640.0" y="47.0" text-anchor="middle" font-weight="700" fill="#0f1219">Server</text>
+<line x1="160" y1="64" x2="160" y2="340" stroke="#c5ccdd" stroke-width="2" stroke-dasharray="5 5"/>
+<line x1="640" y1="64" x2="640" y2="340" stroke="#c5ccdd" stroke-width="2" stroke-dasharray="5 5"/>
+<line x1="164" y1="100" x2="636" y2="100" stroke="#2337ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="400" y="92" text-anchor="middle" font-size="14" fill="#0f1219" >GET /chat  Upgrade: websocket</text>
+<line x1="636" y1="140" x2="164" y2="140" stroke="#2337ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="400" y="132" text-anchor="middle" font-size="14" fill="#0f1219" >101 Switching Protocols</text>
+<rect x="120" y="165" width="560" height="26" rx="6" fill="#eef0ff"/>
+<text x="400" y="183" text-anchor="middle" font-size="13" fill="#2337ff" font-weight="700">One TCP connection stays open (full-duplex)</text>
+<line x1="164" y1="225" x2="636" y2="225" stroke="#2337ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="400" y="217" text-anchor="middle" font-size="13" fill="#60739f" >message</text>
+<line x1="636" y1="260" x2="164" y2="260" stroke="#2337ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="400" y="252" text-anchor="middle" font-size="13" fill="#60739f" >message (server push, no request needed)</text>
+<line x1="164" y1="295" x2="636" y2="295" stroke="#2337ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="400" y="287" text-anchor="middle" font-size="13" fill="#60739f" >message</text>
+<line x1="636" y1="325" x2="164" y2="325" stroke="#2337ff" stroke-width="2" marker-end="url(#a)"/>
+<text x="400" y="317" text-anchor="middle" font-size="13" fill="#60739f" >message</text>
+</svg>
