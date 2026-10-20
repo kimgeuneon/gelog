@@ -1,5 +1,4 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
@@ -8,49 +7,53 @@ import Header from '../components/Header.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const { title, description, pubDate, updatedDate } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <html lang="ko">
 	<head>
 		<BaseHead title={title} description={description} />
 		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
+			.back {
+				display: inline-block;
+				margin-bottom: 1.6rem;
+				font-size: 0.9rem;
+				font-weight: 600;
+				color: var(--muted);
+				text-decoration: none;
 			}
-			.hero-image {
-				width: 100%;
+			.back:hover {
+				color: var(--accent);
 			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
+			.meta {
+				display: inline-flex;
+				gap: 0.6rem;
+				align-items: center;
+				padding: 0.25rem 0.8rem;
+				font-size: 0.82rem;
+				font-weight: 600;
+				color: var(--accent);
+				background: var(--accent-soft);
+				border-radius: 999px;
 			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
+			h1 {
+				margin: 1rem 0 0;
+				font-size: clamp(1.9rem, 5vw, 2.7rem);
+				font-weight: 800;
+				line-height: 1.25;
+				letter-spacing: -0.03em;
 			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
+			.lead {
+				margin: 0.9rem 0 0;
+				font-size: 1.08rem;
+				color: var(--muted);
 			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
+			.divider {
+				height: 1px;
+				margin: 2rem 0 2.2rem;
+				background: linear-gradient(90deg, var(--accent), transparent);
+				opacity: 0.5;
 			}
 		</style>
 	</head>
@@ -59,22 +62,17 @@ const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
 		<Header />
 		<main>
 			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+				<a class="back" href={`${base}/blog`}>← 글 목록</a>
+				<div>
+					<span class="meta">
+						<FormattedDate date={pubDate} />
+						{updatedDate && <span>· 최종 수정 <FormattedDate date={updatedDate} /></span>}
+					</span>
+					<h1>{title}</h1>
+					{description && <p class="lead">{description}</p>}
 				</div>
+				<div class="divider"></div>
 				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{updatedDate && (
-								<div class="last-updated-on">
-									최종 수정: <FormattedDate date={updatedDate} />
-								</div>
-							)}
-						</div>
-						<h1>{title}</h1>
-						<hr />
-					</div>
 					<slot />
 				</div>
 			</article>

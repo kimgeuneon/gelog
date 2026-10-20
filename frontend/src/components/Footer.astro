@@ -3,29 +3,31 @@ const today = new Date();
 ---
 
 <footer>
-	&copy; {today.getFullYear()} gelog
-	<div class="social-links">
+	<div class="inner">
+		<span>&copy; {today.getFullYear()} gelog</span>
 		<a href="https://github.com/kimgeuneon" target="_blank" rel="noopener">GitHub</a>
 	</div>
 </footer>
+
 <style>
 	footer {
-		padding: 2em 1em 6em 1em;
-		background: linear-gradient(var(--gray-gradient)) no-repeat;
-		color: rgb(var(--gray));
-		text-align: center;
+		border-top: 1px solid var(--border);
 	}
-	.social-links {
+	.inner {
 		display: flex;
-		justify-content: center;
-		gap: 1em;
-		margin-top: 1em;
+		align-items: center;
+		justify-content: space-between;
+		max-width: var(--content);
+		margin: 0 auto;
+		padding: 1.6rem 1.25rem 2.4rem;
+		font-size: 0.9rem;
+		color: var(--muted);
 	}
-	.social-links a {
+	a {
+		color: var(--muted);
 		text-decoration: none;
-		color: rgb(var(--gray));
 	}
-	.social-links a:hover {
-		color: rgb(var(--gray-dark));
+	a:hover {
+		color: var(--accent);
 	}
 </style>

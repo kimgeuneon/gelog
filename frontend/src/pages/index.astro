@@ -2,14 +2,14 @@
 import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
+import PostCard from '../components/PostCard.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 5);
+	.slice(0, 6);
 ---
 
 <!doctype html>
@@ -17,42 +17,72 @@ const posts = (await getCollection('blog'))
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
 		<style>
-			ul {
-				list-style: none;
-				padding: 0;
+			.hero {
+				padding: 2.5rem 0 3.5rem;
 			}
-			li {
+			.logo {
+				display: block;
+				width: 72px;
+				height: 72px;
+				margin-bottom: 1.6rem;
+				border-radius: 20px;
+				box-shadow: 0 10px 34px rgba(124, 92, 255, 0.42);
+			}
+			h1 {
+				margin: 0;
+				font-size: clamp(2.2rem, 6vw, 3.4rem);
+				font-weight: 800;
+				line-height: 1.2;
+				letter-spacing: -0.035em;
+			}
+			.sub {
+				margin: 1.1rem 0 0;
+				font-size: 1.1rem;
+				color: var(--muted);
+			}
+			.section-head {
 				display: flex;
+				align-items: baseline;
 				justify-content: space-between;
-				gap: 1rem;
-				padding: 0.4rem 0;
-				border-bottom: 1px solid rgb(var(--gray-light));
+				margin-bottom: 1.1rem;
 			}
-			li a {
+			.section-head h2 {
+				margin: 0;
+				font-size: 1.3rem;
+			}
+			.section-head a {
+				font-size: 0.92rem;
+				font-weight: 600;
 				text-decoration: none;
 			}
-			.date {
-				color: rgb(var(--gray));
-				font-size: 0.8em;
-				white-space: nowrap;
+			.grid {
+				display: grid;
+				gap: 1.1rem;
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
-			<h1>안녕하세요, gelog입니다</h1>
-			<p>{SITE_DESCRIPTION}</p>
-			<h2>최근 글</h2>
-			<ul>
-				{posts.map((post) => (
-					<li>
-						<a href={`${base}/blog/${post.id}/`}>{post.data.title}</a>
-						<span class="date"><FormattedDate date={post.data.pubDate} /></span>
-					</li>
-				))}
-			</ul>
-			<p><a href={`${base}/blog`}>전체 글 보기 →</a></p>
+			<section class="hero">
+				<img class="logo" src={`${base}/favicon.svg`} alt="gk 로고" width="72" height="72" />
+				<h1>
+					안녕하세요.<br />
+					김근언입니다.<br />
+					<span class="gradient-text">괴물 흡수 중.</span>
+				</h1>
+				<p class="sub">{SITE_TITLE} · {SITE_DESCRIPTION}</p>
+			</section>
+
+			<section>
+				<div class="section-head">
+					<h2>최근 글</h2>
+					<a href={`${base}/blog`}>전체 보기 →</a>
+				</div>
+				<div class="grid">
+					{posts.map((post) => <PostCard post={post} />)}
+				</div>
+			</section>
 		</main>
 		<Footer />
 	</body>
