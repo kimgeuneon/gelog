@@ -9,8 +9,6 @@ pubDate: '2026-10-20'
 - [Top 8 API Styles](https://www.instagram.com/p/DcP6dFwPtvm/) — AlgoMaster.io
 - [20 Must-Know Networking Concepts](https://www.instagram.com/p/Ddlswc5PnDv/) — AlgoMaster.io
 
-> 두 게시물은 항목 이름만 나열한 영상이라, 자세한 설명은 일반적으로 알려진 내용으로 채웠습니다. 도식은 직접 그렸습니다.
-
 ## 먼저 구분하기
 
 세 가지는 같은 종류가 아닙니다. 그래서 서로 대체재라기보다 **문제에 따라 고르는 도구**에 가깝습니다.
