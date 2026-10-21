@@ -1,12 +1,19 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import PageHero from '../components/PageHero.astro';
+import PostFooterNav from '../components/PostFooterNav.astro';
+import type { Post } from '../lib/posts';
 import Page from './Page.astro';
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<'blog'>['data'] & {
+	id: string;
+	posts: Post[];
+	prev: Post | null;
+	next: Post | null;
+};
 
 // pubDate / updatedDate 는 스키마(정렬·RSS용)에만 저장하고 화면에는 표시하지 않는다.
-const { title, description } = Astro.props;
+const { title, description, id, posts, prev, next } = Astro.props;
 ---
 
 <Page title={title} description={description}>
@@ -22,4 +29,6 @@ const { title, description } = Astro.props;
 			<slot />
 		</article>
 	</section>
+
+	<PostFooterNav currentId={id} posts={posts} prev={prev} next={next} />
 </Page>

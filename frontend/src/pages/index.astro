@@ -1,14 +1,12 @@
 ---
-import { getCollection } from 'astro:content';
 import PageHero from '../components/PageHero.astro';
 import PostCard from '../components/PostCard.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import Page from '../layouts/Page.astro';
+import { getSortedPosts } from '../lib/posts';
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const posts = (await getCollection('blog'))
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 6);
+const posts = (await getSortedPosts()).slice(0, 6);
 ---
 
 <Page title={SITE_TITLE} description={SITE_DESCRIPTION}>
