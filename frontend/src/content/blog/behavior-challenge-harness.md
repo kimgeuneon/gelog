@@ -1,5 +1,5 @@
 ---
-title: 'Behavior Challenge 하네스 통신 구조'
+title: 'Luci 하네스 통신 구조'
 description: '하네스의 구간마다 어떤 통신 방식을 쓰는지, 왜 그 방식을 골랐는지 정리했습니다.'
 pubDate: '2026-10-20'
 ---
