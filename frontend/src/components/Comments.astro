@@ -1,0 +1,280 @@
+---
+type Props = { slug: string };
+
+const { slug } = Astro.props;
+// 백엔드 주소. 빌드할 때 PUBLIC_API_URL이 없으면 댓글 영역을 그리지 않는다.
+const apiUrl = (import.meta.env.PUBLIC_API_URL ?? '').replace(/\/$/, '');
+---
+
+{
+	apiUrl && (
+		<section class="comments" data-comments data-api={apiUrl} data-slug={slug}>
+			<div class="section-head">
+				<h2>
+					댓글 <span class="count" data-count />
+				</h2>
+			</div>
+
+			<ul class="comment-list" data-list />
+			<p class="empty" data-empty hidden>
+				아직 댓글이 없습니다. 첫 댓글을 남겨 주세요.
+			</p>
+
+			<form class="comment-form" data-form>
+				<div class="row">
+					<input name="nickname" placeholder="닉네임" maxlength="30" required autocomplete="nickname" />
+					<input
+						name="password"
+						type="password"
+						placeholder="비밀번호 (삭제할 때 필요)"
+						minlength="4"
+						maxlength="64"
+						required
+						autocomplete="new-password"
+					/>
+				</div>
+				<textarea name="content" placeholder="댓글을 입력하세요" maxlength="1000" rows="4" required />
+				<div class="actions">
+					<p class="status" data-status role="status" />
+					<button type="submit">등록</button>
+				</div>
+			</form>
+		</section>
+	)
+}
+
+<script>
+	type Comment = { id: number; nickname: string; content: string; created_at: string };
+
+	const fmt = (iso: string) => {
+		const d = new Date(iso);
+		const p = (n: number) => String(n).padStart(2, '0');
+		return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+	};
+
+	async function errorMessage(res: Response): Promise<string> {
+		try {
+			const body = await res.json();
+			if (typeof body.detail === 'string') return body.detail;
+			if (Array.isArray(body.detail)) return '입력값을 확인해 주세요. (닉네임 30자, 댓글 1000자, 비밀번호 4자 이상)';
+		} catch {}
+		return `요청에 실패했습니다. (${res.status})`;
+	}
+
+	function setup(root: HTMLElement) {
+		const api = root.dataset.api!;
+		const slug = root.dataset.slug!;
+		const list = root.querySelector<HTMLUListElement>('[data-list]')!;
+		const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+		const count = root.querySelector<HTMLElement>('[data-count]')!;
+		const form = root.querySelector<HTMLFormElement>('[data-form]')!;
+		const status = root.querySelector<HTMLElement>('[data-status]')!;
+		const button = form.querySelector('button')!;
+
+		const say = (msg: string, isError = false) => {
+			status.textContent = msg;
+			status.classList.toggle('error', isError);
+		};
+
+		// 사용자 입력은 textContent로만 넣는다(HTML로 해석하지 않음).
+		function render(comments: Comment[]) {
+			list.replaceChildren(
+				...comments.map((c) => {
+					const li = document.createElement('li');
+					const head = document.createElement('div');
+					head.className = 'head';
+					const name = document.createElement('strong');
+					name.textContent = c.nickname;
+					const date = document.createElement('time');
+					date.textContent = fmt(c.created_at);
+					const del = document.createElement('button');
+					del.type = 'button';
+					del.className = 'delete';
+					del.textContent = '삭제';
+					del.addEventListener('click', () => remove(c.id));
+					head.append(name, date, del);
+					const body = document.createElement('p');
+					body.textContent = c.content;
+					li.append(head, body);
+					return li;
+				}),
+			);
+			empty.hidden = comments.length > 0;
+			count.textContent = comments.length ? String(comments.length) : '';
+		}
+
+		async function load() {
+			try {
+				const res = await fetch(`${api}/api/posts/${slug}/comments`);
+				if (!res.ok) throw new Error(await errorMessage(res));
+				render(await res.json());
+			} catch {
+				empty.hidden = true;
+				say('댓글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
+			}
+		}
+
+		async function remove(id: number) {
+			const password = prompt('댓글을 쓸 때 입력한 비밀번호를 입력하세요.');
+			if (!password) return;
+			const res = await fetch(`${api}/api/comments/${id}`, {
+				method: 'DELETE',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ password }),
+			});
+			if (res.ok) {
+				say('댓글을 삭제했습니다.');
+				await load();
+			} else {
+				say(await errorMessage(res), true);
+			}
+		}
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+			button.disabled = true;
+			say('등록하는 중…');
+			try {
+				const res = await fetch(`${api}/api/posts/${slug}/comments`, {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify(data),
+				});
+				if (!res.ok) throw new Error(await errorMessage(res));
+				(form.elements.namedItem('content') as HTMLTextAreaElement).value = '';
+				say('댓글을 등록했습니다.');
+				await load();
+			} catch (err) {
+				say(err instanceof Error ? err.message : '등록에 실패했습니다.', true);
+			} finally {
+				button.disabled = false;
+			}
+		});
+
+		load();
+	}
+
+	document.querySelectorAll<HTMLElement>('[data-comments]').forEach(setup);
+</script>
+
+<style>
+	.comments {
+		margin-top: 4rem;
+		padding-top: 2.5rem;
+		border-top: 1px solid var(--border);
+	}
+	.count {
+		margin-left: 0.3rem;
+		font-size: 0.9em;
+		color: var(--accent);
+	}
+	.comment-list {
+		display: grid;
+		gap: 0.8rem;
+		margin: 0 0 1.5rem;
+		padding: 0;
+		list-style: none;
+	}
+	.comment-list :global(li) {
+		padding: 1rem 1.2rem;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+	}
+	.comment-list :global(.head) {
+		display: flex;
+		align-items: baseline;
+		gap: 0.6rem;
+		margin-bottom: 0.35rem;
+	}
+	.comment-list :global(time) {
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	.comment-list :global(.delete) {
+		margin-left: auto;
+		padding: 0;
+		font-size: 0.8rem;
+		color: var(--muted);
+		background: none;
+		border: none;
+		cursor: pointer;
+	}
+	.comment-list :global(.delete:hover) {
+		color: #e5484d;
+	}
+	.comment-list :global(p) {
+		margin: 0;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+	.empty {
+		margin: 0 0 1.5rem;
+		color: var(--muted);
+	}
+	.comment-form {
+		display: grid;
+		gap: 0.7rem;
+		padding: 1.2rem;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+	}
+	.row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 0.7rem;
+	}
+	input,
+	textarea {
+		width: 100%;
+		padding: 0.65rem 0.85rem;
+		font: inherit;
+		font-size: 0.95rem;
+		color: var(--text);
+		background: var(--bg);
+		border: 1px solid var(--border);
+		border-radius: 10px;
+		resize: vertical;
+	}
+	input:focus,
+	textarea:focus {
+		outline: none;
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px var(--accent-soft);
+	}
+	.actions {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+	.status {
+		margin: 0;
+		font-size: 0.88rem;
+		color: var(--muted);
+	}
+	.status.error {
+		color: #e5484d;
+	}
+	button[type='submit'] {
+		padding: 0.55rem 1.4rem;
+		font: inherit;
+		font-weight: 700;
+		color: #fff;
+		background: var(--grad);
+		border: none;
+		border-radius: 999px;
+		cursor: pointer;
+	}
+	button[type='submit']:disabled {
+		opacity: 0.6;
+		cursor: wait;
+	}
+	@media (max-width: 600px) {
+		.row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

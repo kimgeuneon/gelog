@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import Comments from '../components/Comments.astro';
 import PageHero from '../components/PageHero.astro';
 import PostFooterNav from '../components/PostFooterNav.astro';
 import type { Post } from '../lib/posts';
@@ -29,6 +30,8 @@ const { title, description, id, posts, prev, next } = Astro.props;
 			<slot />
 		</article>
 	</section>
+
+	<Comments slug={id} />
 
 	<PostFooterNav currentId={id} posts={posts} prev={prev} next={next} />
 </Page>
