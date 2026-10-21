@@ -8,7 +8,7 @@ pubDate: '2026-10-21'
 
 **demo의 raw HDF5를 시뮬레이터 없이 CPU에서 다시 쌓아(fold) 원하는 프레임의 sim 상태를 만들고, 그 상태를 OmniGibson이 읽는 직렬화 벡터 그대로 HDF5에 저장했다가 평가할 때 eval scene에 복원한다.** 이렇게 한 이유는 두 가지다.
 
-- **빠르다.** 상태는 이미 기록에 들어 있어서 덮어쓰기만 하면 된다. 시뮬레이터를 돌릴 필요가 없어서 demo 하나에 2–3초이고, 예전 GPU 추출은 13–20분 걸렸다.
+- **빠르다.** 상태는 이미 기록에 들어 있어서 덮어쓰기만 하면 된다. 시뮬레이터를 돌릴 필요가 없어서 GPU에서 다시 재생해 상태를 뽑는 방식보다 훨씬 빠르다.
 - **복원이 단순하다.** OmniGibson이 직접 읽는 포맷 그대로 저장하니 별도 변환 없이 `load_state`로 올릴 수 있다.
 
 ![HDF5 sim 상태 흐름: demo raw HDF5를 fold해서 start state를 만들고, eval scene에 복원해 rollout하고, 그 trajectory를 다시 fold해서 새 start state를 만든다](../../assets/diagrams/sim-state-flow.svg)
@@ -51,7 +51,7 @@ pubDate: '2026-10-21'
 | `attrs["transitions"]` | demo 도중 오브젝트·시스템이 생기거나 없어진 기록 (예: 자르면 반쪽 생성) |
 
 - 행에는 엔트리 길이가 적혀 있지 않아서, `scene_file`의 레이아웃으로 각 엔트리를 끝까지 읽어야 한다.
-- demo 도중 생긴 오브젝트는 레이아웃이 없다. 이 경우 가능한 분할을 전부 시도하고, **모든 레지스트리의 엔트리 수가 맞고 행을 정확히 다 소비하는 분할이 딱 하나일 때만** 받아들인다. 0개나 2개 이상이면 에러다. 실측으로 100개 기록의 행 1,062,130개가 전부 한 가지로만 분할됐다.
+- demo 도중 생긴 오브젝트는 레이아웃이 없다. 이 경우 가능한 분할을 전부 시도하고, **모든 레지스트리의 엔트리 수가 맞고 행을 정확히 다 소비하는 분할이 딱 하나일 때만** 받아들인다.
 
 ## 3. 중간 상태는 fold로 만든다
 
@@ -63,7 +63,7 @@ pubDate: '2026-10-21'
 4. **keep_still**: 프레임 F 행에 없던 오브젝트는 upstream playback과 같은 상태로 쓴다. 깨어 있음, 선속도·각속도 0, 관절 속도 0이고, 나머지는 마지막 기록값이다.
 5. **캡처 시점**: `capture_phase = pre_step`, 즉 프레임 F의 policy step 직전 상태다.
 
-같은 fold를 우리 rollout의 기록에도 그대로 쓴다. 원하는 초(`k = round(초 × 30)`)의 행까지 쌓으면 rollout 도중 상태를 새 start state로 만들 수 있다. 다만 3.9.3 recorder가 기록한 rollout만 받고, 다른 버전이나 transition이 있는 rollout은 거부한다.
+같은 fold를 우리 rollout의 기록에도 그대로 쓴다. 원하는 초(`k = round(초 × 30)`)의 행까지 쌓으면 rollout 도중 상태를 새 start state로 만들 수 있다.
 
 ## 4. 버전 차이는 3.9.3 레이아웃으로 맞춘다
 
@@ -72,8 +72,7 @@ pubDate: '2026-10-21'
 - **레이아웃 기록**: 3.9.3은 오브젝트에 기록된 non-kin 순서가 있으면 그 순서대로 읽는다. 그래서 파일에 오브젝트별 상태 이름과 순서(`non_kin_layout`)를 저장한다.
 - **step → 초**: 3.9.3에서 `ToggledOn`의 손 들어감 카운터와 `SlicerActive`의 `delay_counter`가 초 단위가 됐다. 기록된 카운트를 30으로 나눈다.
 - **예전 기록기 규칙**: grill 계열의 `Temperature`는 버리고, toaster에는 실온(23.0)을 추가하고, 개수가 0인 `ModifiedParticles`는 버린다.
-- **파생 상태**: `AABB`, `Open`, `OnFire`, `HeatSourceOrSink`는 3.9.3이 불러올 때 쓰지 않으므로 빠져도 손실이 없다. 그 밖의 상태가 없으면 복원 전에 에러를 낸다.
-- 실측으로 1,236개를 변환했고, 그중 오프라인으로 다시 만든 1,204개와 비트 단위로 같았다.
+- **파생 상태**: `AABB`, `Open`, `OnFire`, `HeatSourceOrSink`는 3.9.3이 불러올 때 쓰지 않으므로 빠져도 손실이 없다.
 
 ## 5. 저장 형식은 `per_skill_v3`다
 
@@ -86,33 +85,23 @@ pubDate: '2026-10-21'
 | `data/transitions_json` | demo transition 원문 |
 | `data.attrs["skills"]` | skill별 구간(`start_frame`, `end_frame`, `horizon`, `capture_phase`), 대상 물체, instruction |
 | `data.attrs["non_kin_layout"]` | 오브젝트별 non-kin 상태 이름과 순서 |
-| `data.attrs["provenance"]` | 원본 raw, annotation 등의 sha256 |
-| `data.attrs["status"]` | `complete`이어야 읽을 수 있음 |
+| `data.attrs["provenance"]` | 어떤 원본에서 만들었는지 추적하는 정보 |
 
-**읽을 때는 아래 중 하나라도 해당하면 거부한다.** 불완전하거나 형식이 맞지 않는 파일로 평가가 돌아가는 것을 막기 위해서다.
+## 6. 불러올 때는 복원하고 보정한다
 
-- 파일 이름에 `.partial.`이 있거나 `status`가 `complete`가 아님
-- `non_kin_layout`이 없음 (3.9.2 시절 파일)
-- 캡처한 skill 수가 기대치와 다름
-- `pre_step`이 아니거나, `source_state_frame`이 start와 다르거나, horizon이 맞지 않음
-
-## 6. 불러올 때는 복원하고 검증한다
-
-**start state는 로드만 하지 않고, 복원 → 보정 → 안정화 → 유효성 검사까지 거쳐야 평가에 쓸 수 있다.** 복원한 상태가 정확하지 않으면 정책이 잘못된 출발점에서 평가받기 때문이다.
+**start state는 로드만 하지 않고, 장면을 정리하고 → 복원하고 → 시뮬레이터 쪽 상태를 맞춰 줘야 그 시점에서 이어서 실행할 수 있다.** 파일에는 sim 상태만 있고, 컨트롤러 목표나 잡기 같은 런타임 상태는 따로 맞춰야 하기 때문이다.
 
 1. **scene 초기화**: 앞 skill이 주입한 오브젝트와 파티클 시스템을 지운다. 남아 있으면 다음 `load_state`가 망가져서 뒤쪽 skill이 줄줄이 실패한다. `ev.reset()` 뒤 시작 전 transition을 재생한다.
 2. **로봇 이름 맞추기**: demo 로봇 이름의 uuid와 레이아웃 키를 eval 로봇 이름으로 바꾼다.
-3. **복원**: 파일의 레이아웃으로 `sim.deserialize`를 하고(벡터를 정확히 다 소비해야 한다), `sim.load_state` 뒤 upstream 버그 우회 4개를 적용한다.
+3. **복원**: 파일의 레이아웃으로 `sim.deserialize`를 하고, `sim.load_state` 뒤 upstream 버그 우회 4개를 적용한다.
    - 물리 파티클이 구 반지름만큼 어긋나는 문제
    - 시각 파티클 순서가 뒤섞이는 문제
    - 파티클 이름 카운터가 줄어드는 문제
    - 붙어 있는 물체의 속도가 0으로 리셋되는 문제
-4. **round-trip 검증**: 복원 직후 dump와 비교한다. 최대 오차가 약 1e-6이면 깨끗하게 복원된 것이다. 벡터끼리 비교하지 않고 엔트리 단위로 비교하는 이유는 파일이 기록 당시 scene 기준이고 eval scene에는 방이 더 있어서 길이가 다르기 때문이다. 쿼터니언 q와 -q는 같은 회전으로 본다.
-5. **드라이브 맞추기**: 관절 드라이브 목표를 복원된 자세로 바꾸고 1 step 진행한다. 안 하면 팔이 이전 목표로 튄다.
-6. **잡기 복구**: 기록에 grasp가 있으면 그대로 쓰고, 없으면 skill별로 넘겨 받은 물체로 assisted grasp를 다시 건다. 추측으로는 다시 잡지 않는다.
-7. **안정화와 유효성 검사**: 5 step 동안 팔 drift, scene 변화, 떨어지거나 5mm 넘게 밀린 물체를 기록한다. 손에 든 물체가 demo와 다르거나 settle 중 scene이 바뀌면 `invalid_start`로 처리하고 rollout하지 않는다.
+4. **드라이브 맞추기**: 관절 드라이브 목표를 복원된 자세로 바꾸고 1 step 진행한다. 안 하면 팔이 이전 목표로 튄다.
+5. **잡기 복구**: 기록에 grasp가 있으면 그대로 쓰고, 없으면 skill별로 넘겨 받은 물체로 assisted grasp를 다시 건다. 추측으로는 다시 잡지 않는다.
 
-`load_state`가 하나라도 실패하면 직전에 저장한 `scene.save()`로 장면을 되돌리고 에러를 낸다. 불러온 상태는 새 `start`가 되어서, 이후 `reset`은 task의 원래 시작이 아니라 불러온 상태로 돌아간다. 이 점은 "불러오기 → 시도 → reset → 다시 시도"를 반복하려는 설계다. 이렇게 낸 점수는 공식 점수가 아니다(`official_start: false`).
+불러온 상태는 새 `start`가 되어서, 이후 `reset`은 task의 원래 시작이 아니라 불러온 상태로 돌아간다. 이 점은 "불러오기 → 시도 → reset → 다시 시도"를 반복하려는 설계다.
 
 ## 7. 상태를 남기는 방법은 세 가지다
 

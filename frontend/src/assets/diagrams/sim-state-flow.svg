@@ -14,7 +14,7 @@
 <text x="765.0" y="105.0" text-anchor="middle" font-size="12" fill="#60739f">OmniGibson 3.9.3-post1</text>
 <line x1="244" y1="88" x2="341" y2="88" stroke="#2337ff" stroke-width="2" marker-end="url(#a)"/>
 <text x="292" y="76" text-anchor="middle" font-size="13" fill="#0f1219" font-weight="700">fold</text>
-<text x="292" y="108" text-anchor="middle" font-size="11" fill="#60739f" >2~3 s / demo</text>
+<text x="292" y="108" text-anchor="middle" font-size="11" fill="#60739f" >no simulator</text>
 <line x1="559" y1="88" x2="656" y2="88" stroke="#2337ff" stroke-width="2" marker-end="url(#a)"/>
 <text x="607" y="76" text-anchor="middle" font-size="13" fill="#0f1219" font-weight="700">restore</text>
 <text x="607" y="108" text-anchor="middle" font-size="11" fill="#60739f" >load_state</text>
