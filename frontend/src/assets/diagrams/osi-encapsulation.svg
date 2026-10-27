@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 410" width="900" height="410" font-family="-apple-system,'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',Helvetica,Arial,sans-serif" font-size="14">
+<rect width="900" height="410" rx="14" fill="#ffffff" stroke="#e5e9f0"/>
+<text x="24" y="36" text-anchor="start" font-size="15" fill="#0f1219" font-weight="700">캡슐화: 내려갈수록 앞에 헤더가 하나씩 붙는다</text>
+<text x="876" y="36" text-anchor="end" font-size="12" fill="#60739f" >서버는 아래에서 위로 하나씩 벗긴다 ↑</text>
+<rect x="24" y="60" width="150" height="36" rx="8" fill="#eef0ff" stroke="#2337ff" stroke-width="1.2"/>
+<text x="99" y="83.0" text-anchor="middle" font-size="12.5" fill="#0f1219" font-weight="700">7 Application</text>
+<rect x="190" y="60" width="150" height="36" rx="6" fill="#d9f7ec" stroke="#13a36f" stroke-width="1.2"/>
+<text x="265.0" y="83.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">HTTP 요청</text>
+<rect x="24" y="104" width="150" height="36" rx="8" fill="#eef0ff" stroke="#2337ff" stroke-width="1.2"/>
+<text x="99" y="127.0" text-anchor="middle" font-size="12.5" fill="#0f1219" font-weight="700">6 Presentation</text>
+<rect x="190" y="104" width="88" height="36" rx="6" fill="#fdf0d2" stroke="#d39b1c" stroke-width="1.2"/>
+<text x="234.0" y="127.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">TLS</text>
+<rect x="284" y="104" width="150" height="36" rx="6" fill="#d9f7ec" stroke="#13a36f" stroke-width="1.2"/>
+<text x="359.0" y="127.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">HTTP 요청</text>
+<rect x="24" y="148" width="150" height="36" rx="8" fill="#eef0ff" stroke="#2337ff" stroke-width="1.2"/>
+<text x="99" y="171.0" text-anchor="middle" font-size="12.5" fill="#0f1219" font-weight="700">5 Session</text>
+<rect x="190" y="148" width="88" height="36" rx="6" fill="#fbe0ee" stroke="#c2558c" stroke-width="1.2"/>
+<text x="234.0" y="171.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">Session</text>
+<rect x="284" y="148" width="88" height="36" rx="6" fill="#fdf0d2" stroke="#d39b1c" stroke-width="1.2"/>
+<text x="328.0" y="171.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">TLS</text>
+<rect x="378" y="148" width="150" height="36" rx="6" fill="#d9f7ec" stroke="#13a36f" stroke-width="1.2"/>
+<text x="453.0" y="171.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">HTTP 요청</text>
+<rect x="24" y="192" width="150" height="36" rx="8" fill="#eef0ff" stroke="#2337ff" stroke-width="1.2"/>
+<text x="99" y="215.0" text-anchor="middle" font-size="12.5" fill="#0f1219" font-weight="700">4 Transport</text>
+<rect x="190" y="192" width="88" height="36" rx="6" fill="#fff8de" stroke="#b59a1f" stroke-width="1.2"/>
+<text x="234.0" y="215.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">TCP</text>
+<rect x="284" y="192" width="88" height="36" rx="6" fill="#fbe0ee" stroke="#c2558c" stroke-width="1.2"/>
+<text x="328.0" y="215.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">Session</text>
+<rect x="378" y="192" width="88" height="36" rx="6" fill="#fdf0d2" stroke="#d39b1c" stroke-width="1.2"/>
+<text x="422.0" y="215.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">TLS</text>
+<rect x="472" y="192" width="150" height="36" rx="6" fill="#d9f7ec" stroke="#13a36f" stroke-width="1.2"/>
+<text x="547.0" y="215.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">HTTP 요청</text>
+<rect x="24" y="236" width="150" height="36" rx="8" fill="#eef0ff" stroke="#2337ff" stroke-width="1.2"/>
+<text x="99" y="259.0" text-anchor="middle" font-size="12.5" fill="#0f1219" font-weight="700">3 Network</text>
+<rect x="190" y="236" width="88" height="36" rx="6" fill="#dff4ff" stroke="#2b86c5" stroke-width="1.2"/>
+<text x="234.0" y="259.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">IP</text>
+<rect x="284" y="236" width="88" height="36" rx="6" fill="#fff8de" stroke="#b59a1f" stroke-width="1.2"/>
+<text x="328.0" y="259.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">TCP</text>
+<rect x="378" y="236" width="88" height="36" rx="6" fill="#fbe0ee" stroke="#c2558c" stroke-width="1.2"/>
+<text x="422.0" y="259.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">Session</text>
+<rect x="472" y="236" width="88" height="36" rx="6" fill="#fdf0d2" stroke="#d39b1c" stroke-width="1.2"/>
+<text x="516.0" y="259.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">TLS</text>
+<rect x="566" y="236" width="150" height="36" rx="6" fill="#d9f7ec" stroke="#13a36f" stroke-width="1.2"/>
+<text x="641.0" y="259.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">HTTP 요청</text>
+<rect x="24" y="280" width="150" height="36" rx="8" fill="#eef0ff" stroke="#2337ff" stroke-width="1.2"/>
+<text x="99" y="303.0" text-anchor="middle" font-size="12.5" fill="#0f1219" font-weight="700">2 Data Link</text>
+<rect x="190" y="280" width="88" height="36" rx="6" fill="#ffe9d6" stroke="#d9772b" stroke-width="1.2"/>
+<text x="234.0" y="303.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">MAC</text>
+<rect x="284" y="280" width="88" height="36" rx="6" fill="#dff4ff" stroke="#2b86c5" stroke-width="1.2"/>
+<text x="328.0" y="303.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">IP</text>
+<rect x="378" y="280" width="88" height="36" rx="6" fill="#fff8de" stroke="#b59a1f" stroke-width="1.2"/>
+<text x="422.0" y="303.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">TCP</text>
+<rect x="472" y="280" width="88" height="36" rx="6" fill="#fbe0ee" stroke="#c2558c" stroke-width="1.2"/>
+<text x="516.0" y="303.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">Session</text>
+<rect x="566" y="280" width="88" height="36" rx="6" fill="#fdf0d2" stroke="#d39b1c" stroke-width="1.2"/>
+<text x="610.0" y="303.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">TLS</text>
+<rect x="660" y="280" width="150" height="36" rx="6" fill="#d9f7ec" stroke="#13a36f" stroke-width="1.2"/>
+<text x="735.0" y="303.0" text-anchor="middle" font-size="12" fill="#0f1219" font-weight="700">HTTP 요청</text>
+<rect x="24" y="324" width="150" height="36" rx="8" fill="#eef0ff" stroke="#2337ff" stroke-width="1.2"/>
+<text x="99" y="347.0" text-anchor="middle" font-size="12.5" fill="#0f1219" font-weight="700">1 Physical</text>
+<rect x="190" y="324" width="620" height="36" rx="6" fill="#f2f3f7" stroke="#9aa3bd" stroke-width="1.2"/>
+<text x="500.0" y="347.0" text-anchor="middle" font-size="12.5" fill="#3d4561" font-weight="700">0 1 1 0 1 0 0 1 …  전기 신호 / 전파 (Wi-Fi)</text>
+<text x="24" y="384" text-anchor="start" font-size="12.5" fill="#60739f" >라우터는 3계층(IP)까지, 스위치는 2계층(MAC)까지 열어 보고 다음으로 넘깁니다.</text>
+</svg>
