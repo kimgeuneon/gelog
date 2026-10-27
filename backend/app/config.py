@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 DEFAULT_DB_PATH = Path(__file__).resolve().parent.parent / "data" / "comments.db"
-DEFAULT_ORIGINS = "http://localhost:4321,https://kimgeuneon.github.io"
+DEFAULT_ORIGINS = "http://localhost:4321,https://gelog.co.kr,https://www.gelog.co.kr"
 
 
 @dataclass(frozen=True)

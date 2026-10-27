@@ -7,7 +7,6 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-    site: 'https://kimgeuneon.github.io',
-    base: '/gelog',
+    site: 'https://gelog.co.kr',
     integrations: [mdx(), sitemap(), react()],
 });

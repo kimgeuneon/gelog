@@ -41,7 +41,7 @@ python3.12 -m venv .venv
 | 이름 | 기본값 | 설명 |
 |---|---|---|
 | `DATABASE_PATH` | `backend/data/comments.db` | SQLite 파일 경로 |
-| `ALLOWED_ORIGINS` | `http://localhost:4321,https://kimgeuneon.github.io` | CORS 허용 출처 (쉼표 구분) |
+| `ALLOWED_ORIGINS` | `http://localhost:4321,https://gelog.co.kr,https://www.gelog.co.kr` | CORS 허용 출처 (쉼표 구분) |
 
 ## 프론트엔드 연결
 
