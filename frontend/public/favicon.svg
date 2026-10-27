@@ -4,7 +4,7 @@
       <stop offset="0" stop-color="#1b1f3a"/>
       <stop offset="1" stop-color="#0b0d18"/>
     </linearGradient>
-    <linearGradient id="fg" gradientUnits="userSpaceOnUse" x1="10" y1="10" x2="56" y2="54">
+    <linearGradient id="fg" gradientUnits="userSpaceOnUse" x1="10" y1="12" x2="56" y2="54">
       <stop offset="0" stop-color="#6ea8ff"/>
       <stop offset="0.55" stop-color="#7c5cff"/>
       <stop offset="1" stop-color="#d45cff"/>
@@ -13,13 +13,13 @@
   <rect width="64" height="64" rx="15" fill="url(#bg)"/>
   <g fill="none" stroke="url(#fg)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
     <!-- g -->
-    <circle cx="21" cy="30" r="8.5"/>
-    <path d="M29.5 22v23c0 5-3.5 8-9 8-3 0-5.5-.8-7.5-2.4"/>
-    <!-- k -->
-    <path d="M42 13v30"/>
-    <path d="M54 21 42 33"/>
-    <path d="M46.5 30.5 55 42"/>
+    <circle cx="22" cy="27" r="9"/>
+    <path d="M31 18v23c0 6-4 9-10 9-3.2 0-5.8-.9-7.8-2.6"/>
+    <!-- log lines -->
+    <path d="M41 19h12"/>
+    <path d="M41 30h9"/>
+    <path d="M41 41h12"/>
   </g>
-  <!-- monster eye -->
-  <circle cx="21" cy="30" r="2.6" fill="#fff"/>
+  <!-- eye -->
+  <circle cx="22" cy="27" r="2.8" fill="#fff"/>
 </svg>
