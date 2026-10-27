@@ -19,8 +19,6 @@ KodeKloud의 [The OSI Model: 7 Layers Explained with HTTP Request](https://www.y
 | UDP 구현 | 4 | 비연결, 메시지 경계, 손실 |
 | HTTP/2 스트리밍 | 7 (TLS 위) | 연결 하나에서 여러 스트림을 동시에 |
 
-전체 코드는 [labs/osi-network](https://github.com/kimgeuneon/gelog/tree/main/labs/osi-network)에 있습니다.
-
 ## 1. 요청 하나 따라가기
 
 내 Mac에서 `example.com`에 HTTPS 요청을 보내면서 계층마다 실제 값을 출력했습니다(`trace_layers.py`). 사설 IP와 MAC 주소는 일부를 가렸습니다.
