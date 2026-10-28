@@ -6,8 +6,8 @@ from fastapi import Request
 
 from app.infrastructure.clock import SystemClock
 from app.infrastructure.db import connect
-from app.repositories.sqlite_comments import SqliteCommentRepository
-from app.security.passwords import Pbkdf2PasswordHasher
+from app.infrastructure.sqlite_comments import SqliteCommentRepository
+from app.infrastructure.passwords import Pbkdf2PasswordHasher
 from app.services.comments import CommentService
 
 _hasher = Pbkdf2PasswordHasher()

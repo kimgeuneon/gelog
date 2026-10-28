@@ -3,7 +3,7 @@
 from fastapi import APIRouter, Depends, Path, status
 
 from app.api.dependencies import get_comment_service
-from app.schemas import CommentCreate, CommentDelete, CommentOut
+from app.api.schemas import CommentCreate, CommentDelete, CommentOut
 from app.services.comments import CommentService
 
 router = APIRouter(prefix="/api", tags=["comments"])

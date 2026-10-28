@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 import pytest
 
 from app.domain.comments import Comment, CommentNotFound, NewComment, WrongPassword
-from app.security.passwords import Pbkdf2PasswordHasher
+from app.infrastructure.passwords import Pbkdf2PasswordHasher
 from app.services.comments import CommentService
 
 FIXED = datetime(2026, 10, 28, 12, 0, tzinfo=timezone.utc)

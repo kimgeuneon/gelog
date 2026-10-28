@@ -10,13 +10,11 @@ SOLID 원칙에 맞춰 계층을 나눴습니다. 안쪽(domain)은 바깥(FastA
 app/
   domain/comments.py      엔티티, 도메인 오류, 포트(Protocol: 저장소·해시·시계)
   services/comments.py    댓글 규칙. 포트에만 의존 (DIP)
-  repositories/           포트의 SQLite 구현 (SQL은 여기에만)
-  security/passwords.py   포트의 PBKDF2 해시 구현
-  infrastructure/         DB 연결·스키마, 시스템 시계
+  infrastructure/         포트의 구현: SQLite 저장소(SQL은 여기에만), PBKDF2 해시, DB 연결·스키마, 시스템 시계
   api/dependencies.py     조립 지점: 포트에 어떤 구현을 끼울지 결정
   api/errors.py           도메인 오류 → HTTP 상태 코드 표 (OCP)
+  api/schemas.py          HTTP 입출력 형식 (pydantic)
   routers/                HTTP 엔드포인트 (요청/응답 변환만)
-  schemas.py              HTTP 입출력 형식 (pydantic)
   config.py, main.py      설정, 앱 생성
 tests/
   test_comments.py        API 통합 테스트 (실제 SQLite)
