@@ -1,17 +1,17 @@
 """FastAPI 앱 진입점: uvicorn app.main:app"""
 
 from contextlib import asynccontextmanager
-from typing import Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.errors import register_error_handlers
 from app.config import Settings
-from app.db import init_db
-from app.routers import comments
+from app.infrastructure.db import init_db
+from app.routers import comments, health
 
 
-def create_app(settings: Optional[Settings] = None) -> FastAPI:
+def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
 
     @asynccontextmanager
@@ -27,12 +27,9 @@ def create_app(settings: Optional[Settings] = None) -> FastAPI:
         allow_methods=["GET", "POST", "DELETE"],
         allow_headers=["Content-Type"],
     )
-    app.include_router(comments.router)
-
-    @app.get("/api/health")
-    def health():
-        return {"status": "ok"}
-
+    register_error_handlers(app)
+    for router in (health.router, comments.router):
+        app.include_router(router)
     return app
 
 

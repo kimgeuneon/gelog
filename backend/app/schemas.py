@@ -1,8 +1,8 @@
-"""API 입출력 형식."""
+"""HTTP 입출력 형식(pydantic). 도메인 엔티티와 분리해 둔다."""
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class CommentCreate(BaseModel):
@@ -24,6 +24,8 @@ class CommentDelete(BaseModel):
 
 
 class CommentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     post_slug: str
     nickname: str

@@ -1,0 +1,73 @@
+---
+import PageHero from '../components/PageHero.astro';
+import Page from '../layouts/Page.astro';
+
+// 암호화된 게시판(봉투). 아직 seal 전이라 파일이 없으면 빈 게시판으로 둔다.
+const sealedFiles = import.meta.glob('../data/private.sealed.json', { eager: true, import: 'default' });
+const sealed = Object.values(sealedFiles)[0] ?? null;
+---
+
+<Page title="Private" description="비밀번호가 있어야 볼 수 있는 게시판" noindex>
+	<PageHero lead="비밀번호를 입력해야 볼 수 있는 게시판입니다.">
+		<span class="gradient-text">Private</span>
+	</PageHero>
+
+	<section class="private" data-private>
+		{sealed && <script type="application/json" data-sealed set:html={JSON.stringify(sealed)} />}
+
+		{
+			sealed ? (
+				<form class="lock panel" data-lock>
+					<label for="private-pw">비밀번호</label>
+					<div class="lock-row">
+						<input class="field" id="private-pw" type="password" autocomplete="current-password" required />
+						<button class="btn-primary" type="submit">
+							열기
+						</button>
+					</div>
+					<p class="status" data-status role="status" />
+				</form>
+			) : (
+				<p class="empty">아직 게시판에 글이 없습니다.</p>
+			)
+		}
+
+		<div data-board hidden>
+			<div class="section-head">
+				<h2 data-board-title>글 목록</h2>
+				<button type="button" class="btn-link" data-relock>잠그기</button>
+			</div>
+			<div class="card-grid" data-list></div>
+			<article class="prose" data-post hidden></article>
+			<p class="back" data-back-wrap hidden><a href="#" data-back>← 목록으로</a></p>
+		</div>
+	</section>
+</Page>
+
+<script>
+	import { mountPrivateBoard } from '../lib/private';
+
+	document.querySelectorAll<HTMLElement>('[data-private]').forEach(mountPrivateBoard);
+</script>
+
+<style>
+	.lock {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		max-width: 26rem;
+	}
+	.lock label {
+		font-weight: 700;
+	}
+	.lock-row {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.empty {
+		color: var(--muted);
+	}
+	.back {
+		margin-top: 2.5rem;
+	}
+</style>

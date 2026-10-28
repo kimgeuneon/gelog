@@ -8,5 +8,5 @@ import { defineConfig } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
     site: 'https://gelog.co.kr',
-    integrations: [mdx(), sitemap(), react()],
+    integrations: [mdx(), sitemap({ filter: (page) => !page.includes('/private') }), react()],
 });

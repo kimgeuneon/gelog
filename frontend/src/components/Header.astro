@@ -1,20 +1,21 @@
 ---
+import { withBase } from '../lib/url';
 import { SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <header>
 	<nav>
-		<a href={base + '/'} class="brand">
-			<img src={`${base}/favicon.svg`} alt="" width="30" height="30" />
+		<a href={withBase('/')} class="brand">
+			<img src={withBase('/favicon.svg')} alt="" width="30" height="30" />
 			<span>{SITE_TITLE}</span>
 		</a>
 		<div class="links">
 			<HeaderLink href="/">Home</HeaderLink>
 			<HeaderLink href="/blog">Blog</HeaderLink>
 			<HeaderLink href="/about">About</HeaderLink>
+			<HeaderLink href="/private">Private</HeaderLink>
 		</div>
 	</nav>
 </header>

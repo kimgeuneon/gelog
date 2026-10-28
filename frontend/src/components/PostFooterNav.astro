@@ -1,11 +1,11 @@
 ---
+import { postUrl, withBase } from '../lib/url';
 import type { Post } from '../lib/posts';
 
 type Props = { currentId: string; posts: Post[]; prev: Post | null; next: Post | null };
 
 const { currentId, posts, prev, next } = Astro.props;
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const href = (p: Post) => `${base}/blog/${p.id}/`;
+const href = (p: Post) => postUrl(p.id);
 ---
 
 <nav class="post-nav" aria-label="이전 글과 다음 글">
@@ -40,7 +40,7 @@ const href = (p: Post) => `${base}/blog/${p.id}/`;
 <section class="post-list">
 	<div class="section-head">
 		<h2>글 목록</h2>
-		<a href={`${base}/blog`}>전체 보기 →</a>
+		<a href={withBase('/blog')}>전체 보기 →</a>
 	</div>
 	<ol>
 		{

@@ -1,19 +1,13 @@
 ---
 import { render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
-import { getSortedPosts, type Post } from '../../lib/posts';
+import { getSortedPosts, type Post, withNeighbors } from '../../lib/posts';
 
 export async function getStaticPaths() {
 	const posts = await getSortedPosts();
-	return posts.map((post, i) => ({
+	return withNeighbors(posts).map(({ post, prev, next }) => ({
 		params: { slug: post.id },
-		props: {
-			post,
-			posts,
-			// 최신 글이 앞이므로, 배열의 다음 원소가 이전(더 오래된) 글이다.
-			prev: posts[i + 1] ?? null,
-			next: posts[i - 1] ?? null,
-		},
+		props: { post, posts, prev, next },
 	}));
 }
 

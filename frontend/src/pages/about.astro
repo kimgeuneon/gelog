@@ -1,9 +1,9 @@
 ---
+import { withBase } from '../lib/url';
 import PageHero from '../components/PageHero.astro';
 import { SITE_TITLE } from '../consts';
 import Page from '../layouts/Page.astro';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <Page title={SITE_TITLE} description="김근언 자기소개">
@@ -18,7 +18,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 			<h2>링크</h2>
 		</div>
 		<div class="card-grid">
-			<a class="card" href={`${base}/blog`}>
+			<a class="card" href={withBase('/blog')}>
 				<span class="card-meta">Blog</span>
 				<h3 class="card-title">모든 글 보기</h3>
 				<span class="card-more">열기 →</span>

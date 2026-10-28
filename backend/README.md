@@ -4,17 +4,27 @@
 
 ## 구조
 
+SOLID 원칙에 맞춰 계층을 나눴습니다. 안쪽(domain)은 바깥(FastAPI, SQLite)을 모릅니다.
+
 ```
 app/
-  main.py           앱 생성, CORS, 라우터 연결
-  config.py         환경 변수 설정
-  db.py             SQLite 연결과 스키마
-  schemas.py        요청/응답 형식 (pydantic)
-  routers/          HTTP 엔드포인트
-  services/         규칙 (비밀번호 해시, 삭제 권한 확인)
-  repositories/     SQL 접근
-tests/              pytest
+  domain/comments.py      엔티티, 도메인 오류, 포트(Protocol: 저장소·해시·시계)
+  services/comments.py    댓글 규칙. 포트에만 의존 (DIP)
+  repositories/           포트의 SQLite 구현 (SQL은 여기에만)
+  security/passwords.py   포트의 PBKDF2 해시 구현
+  infrastructure/         DB 연결·스키마, 시스템 시계
+  api/dependencies.py     조립 지점: 포트에 어떤 구현을 끼울지 결정
+  api/errors.py           도메인 오류 → HTTP 상태 코드 표 (OCP)
+  routers/                HTTP 엔드포인트 (요청/응답 변환만)
+  schemas.py              HTTP 입출력 형식 (pydantic)
+  config.py, main.py      설정, 앱 생성
+tests/
+  test_comments.py        API 통합 테스트 (실제 SQLite)
+  test_comment_service.py 서비스 단위 테스트 (가짜 포트 주입, DB 없음)
 ```
+
+- **새 저장소**(예: PostgreSQL): `CommentRepository`를 따르는 클래스를 만들고 `api/dependencies.py`만 바꿉니다.
+- **새 도메인 오류**: `DomainError`를 상속하고 `api/errors.py` 표에 한 줄 추가합니다. 라우터는 그대로입니다.
 
 ## 실행
 

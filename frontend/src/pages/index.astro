@@ -1,11 +1,11 @@
 ---
+import { withBase } from '../lib/url';
 import PageHero from '../components/PageHero.astro';
 import PostCard from '../components/PostCard.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import Page from '../layouts/Page.astro';
 import { getSortedPosts } from '../lib/posts';
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const posts = (await getSortedPosts()).slice(0, 6);
 ---
 
@@ -19,7 +19,7 @@ const posts = (await getSortedPosts()).slice(0, 6);
 	<section>
 		<div class="section-head">
 			<h2>최근 글</h2>
-			<a href={`${base}/blog`}>전체 보기 →</a>
+			<a href={withBase('/blog')}>전체 보기 →</a>
 		</div>
 		<div class="card-grid">
 			{posts.map((post) => <PostCard post={post} />)}
