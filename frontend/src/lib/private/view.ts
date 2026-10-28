@@ -63,6 +63,7 @@ export class PrivateBoardView {
 		this.title.textContent = post.title;
 		// 내가 쓴 글을 빌드 때 HTML로 바꾼 것이라 그대로 넣는다.
 		this.post.innerHTML = post.html;
+		if (post.deck) this.post.prepend(deckPlayer(post.deck, post.title));
 		this.toggle(true);
 	}
 
@@ -96,4 +97,38 @@ function card(p: PrivatePost) {
 	d.textContent = p.description;
 	a.append(meta, h, d);
 	return a;
+}
+
+/**
+ * 발표 슬라이드를 sandbox iframe으로 띄운다.
+ * allow-same-origin을 주지 않아서 iframe 안의 코드는 이 페이지(열쇠가 든 sessionStorage 등)에 접근할 수 없다.
+ */
+function deckPlayer(html: string, title: string) {
+	const wrap = document.createElement('div');
+	wrap.className = 'deck-player';
+
+	const frame = document.createElement('iframe');
+	frame.className = 'deck-frame';
+	frame.title = `${title} 발표 슬라이드`;
+	frame.setAttribute('sandbox', 'allow-scripts');
+	frame.setAttribute('allow', 'fullscreen');
+	frame.allowFullscreen = true;
+	frame.srcdoc = html;
+
+	const bar = document.createElement('div');
+	bar.className = 'deck-bar';
+	const hint = document.createElement('span');
+	hint.textContent = '슬라이드를 한 번 누른 뒤 → / Space 로 넘기기';
+	const full = document.createElement('button');
+	full.type = 'button';
+	full.className = 'btn-primary';
+	full.textContent = '전체화면으로 발표';
+	full.addEventListener('click', () => {
+		frame.requestFullscreen?.().catch(() => {});
+		frame.focus();
+	});
+	bar.append(hint, full);
+
+	wrap.append(frame, bar);
+	return wrap;
 }

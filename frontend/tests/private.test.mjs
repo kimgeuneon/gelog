@@ -58,3 +58,33 @@ test('본문이 비어 있어도 글이 된다', () => {
 	assert.equal(post.title, '빈 글');
 	assert.equal(post.html, '');
 });
+
+test('발표 폴더를 외부 파일 참조 없는 HTML 하나로 묶는다', async () => {
+	const { mkdtemp, writeFile, mkdir } = await import('node:fs/promises');
+	const { tmpdir } = await import('node:os');
+	const { pathToFileURL } = await import('node:url');
+	const { bundleDeck } = await import('../scripts/bundle-deck.mjs');
+	const dir = await mkdtemp(`${tmpdir()}/deck-`);
+	await mkdir(`${dir}/assets`);
+	await writeFile(`${dir}/assets/a.png`, Buffer.from([137, 80, 78, 71]));
+	await writeFile(`${dir}/style.css`, 'body{color:red}');
+	await writeFile(`${dir}/content.js`, "window.X={src:'assets/a.png', s:'</script>'};");
+	await writeFile(`${dir}/app.js`, 'console.log(1)');
+	await writeFile(
+		`${dir}/index.html`,
+		'<link rel="stylesheet" href="style.css" /><script src="content.js"></script><script src="app.js"></script>',
+	);
+	const html = await bundleDeck(pathToFileURL(`${dir}/`));
+	assert.match(html, /<style>\nbody\{color:red\}/);
+	assert.match(html, /data:image\/png;base64,/);
+	assert.ok(!/src="|href="|'assets\//.test(html), '외부 파일 참조가 남으면 안 된다');
+	assert.ok(html.includes('<\\/script>'), '인라인 스크립트 안의 </script>는 이스케이프');
+	assert.equal(html.match(/<\/script>/g).length, 2);
+});
+
+test('deck이 있는 글은 묶은 HTML을 deck 필드로 갖는다', async () => {
+	const { attachDeck } = await import('../scripts/seal-private.mjs');
+	const plain = toPost('a.md', "---\ntitle: 'A'\n---\n본문");
+	assert.equal((await attachDeck(plain)).deck, undefined);
+	assert.equal(toPost('b.md', "---\ndeck: 'x'\n---\n").deckDir, 'x');
+});

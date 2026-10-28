@@ -1,4 +1,12 @@
-export type PrivatePost = { slug: string; title: string; description: string; pubDate: string; html: string };
+export type PrivatePost = {
+	slug: string;
+	title: string;
+	description: string;
+	pubDate: string;
+	html: string;
+	/** 발표 슬라이드(HTML 문서 하나). 있으면 글 안에 iframe으로 띄운다. */
+	deck?: string;
+};
 
 export type PrivatePayload = { posts: PrivatePost[] };
 

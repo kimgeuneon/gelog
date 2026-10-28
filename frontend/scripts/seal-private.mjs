@@ -1,7 +1,7 @@
 // 비공개 게시판 암호화 스크립트.
 //
 //   frontend/private/*.md  (git에 올리지 않음)
-//     → 마크다운을 HTML로 변환
+//     → 마크다운을 HTML로 변환 (front matter에 deck: '폴더'가 있으면 private/decks/폴더 발표도 함께 묶음)
 //     → 비밀번호로 암호화 (형식은 src/lib/private/cipher.js 하나가 정한다)
 //     → src/data/private.sealed.json  (이 파일만 커밋)
 //
@@ -12,6 +12,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
 import { marked } from 'marked';
 import { seal } from '../src/lib/private/cipher.js';
+import { bundleDeck } from './bundle-deck.mjs';
 
 const SOURCE_DIR = new URL('../private/', import.meta.url);
 const OUTPUT_FILE = new URL('../src/data/private.sealed.json', import.meta.url);
@@ -39,7 +40,15 @@ export function toPost(fileName, raw) {
 		description: meta.description || '',
 		pubDate: meta.pubDate || '',
 		html: marked.parse(body),
+		...(meta.deck ? { deckDir: meta.deck } : {}),
 	};
+}
+
+/** front matter에 deck: '폴더'가 있으면 private/decks/폴더 를 HTML 하나로 묶어 붙인다. */
+export async function attachDeck(post, sourceDir = SOURCE_DIR) {
+	if (!post.deckDir) return post;
+	const { deckDir, ...rest } = post;
+	return { ...rest, deck: await bundleDeck(new URL(`decks/${deckDir}/`, sourceDir)) };
 }
 
 /** 최신 글이 먼저, 날짜가 같으면 slug 순. */
@@ -50,7 +59,9 @@ export const isPostFile = (name) => name.endsWith('.md') && !/^readme\.md$/i.tes
 
 async function readPosts() {
 	const files = (await readdir(SOURCE_DIR).catch(() => [])).filter(isPostFile);
-	const posts = await Promise.all(files.map(async (f) => toPost(f, await readFile(new URL(f, SOURCE_DIR), 'utf8'))));
+	const posts = await Promise.all(
+		files.map(async (f) => attachDeck(toPost(f, await readFile(new URL(f, SOURCE_DIR), 'utf8')))),
+	);
 	return posts.sort(comparePosts);
 }
 

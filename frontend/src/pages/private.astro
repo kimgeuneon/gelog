@@ -70,4 +70,31 @@ const sealed = Object.values(sealedFiles)[0] ?? null;
 	.back {
 		margin-top: 2.5rem;
 	}
+	/* 발표 슬라이드: view.ts가 동적으로 만드는 요소라 :global */
+	.private :global(.deck-player) {
+		display: flex;
+		flex-direction: column;
+		gap: 0.8rem;
+		margin-bottom: 2rem;
+	}
+	.private :global(.deck-frame) {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		background: #000;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+	}
+	.private :global(.deck-frame:fullscreen) {
+		border: none;
+		border-radius: 0;
+	}
+	.private :global(.deck-bar) {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		font-size: 0.88rem;
+		color: var(--muted);
+	}
 </style>
