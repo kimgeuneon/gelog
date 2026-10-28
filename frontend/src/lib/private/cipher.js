@@ -12,8 +12,19 @@ const subtle = globalThis.crypto.subtle;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-/** @param {Uint8Array} bytes */
-export const toBase64 = (bytes) => btoa(String.fromCharCode(...bytes));
+/**
+ * 큰 데이터(영상 포함 발표 등)도 되도록 조금씩 나눠서 변환한다.
+ * 한 번에 펼치면(...bytes) 인자 개수 한도를 넘어 스택이 터진다.
+ * @param {Uint8Array} bytes
+ */
+export function toBase64(bytes) {
+	const CHUNK = 0x8000;
+	let binary = '';
+	for (let i = 0; i < bytes.length; i += CHUNK) {
+		binary += String.fromCharCode.apply(null, bytes.subarray(i, i + CHUNK));
+	}
+	return btoa(binary);
+}
 /** @param {string} text */
 export const fromBase64 = (text) => Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
 

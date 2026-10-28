@@ -88,3 +88,10 @@ test('deck이 있는 글은 묶은 HTML을 deck 필드로 갖는다', async () =
 	assert.equal((await attachDeck(plain)).deck, undefined);
 	assert.equal(toPost('b.md', "---\ndeck: 'x'\n---\n").deckDir, 'x');
 });
+
+test('수 MB짜리 내용도 암호화·복호화된다 (영상이 든 발표)', async () => {
+	const big = 'x'.repeat(5 * 1024 * 1024);
+	const env = await seal({ big }, 'correct-horse', ITER);
+	const { payload } = await unlock(env, 'correct-horse');
+	assert.equal(payload.big.length, big.length);
+});
