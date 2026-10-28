@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { exportKey, importKey, openWithKey, seal, unlock } from '../src/lib/private/cipher.js';
-import { comparePosts, parseFrontMatter, toPost } from '../scripts/seal-private.mjs';
+import { comparePosts, isPostFile, parseFrontMatter, toPost } from '../scripts/seal-private.mjs';
 
 const ITER = 1_000; // 테스트는 빠르게
 
@@ -45,4 +45,16 @@ test('front matter와 마크다운을 글로 바꾼다', () => {
 test('최신 글이 먼저 온다', () => {
 	const posts = [{ slug: 'b', pubDate: '2026-01-01' }, { slug: 'a', pubDate: '2026-02-01' }, { slug: 'c', pubDate: '2026-01-01' }];
 	assert.deepEqual(posts.sort(comparePosts).map((p) => p.slug), ['a', 'b', 'c']);
+});
+
+test('README는 게시판 글로 쓰지 않는다', () => {
+	assert.ok(isPostFile('261110-deepbot-lecture.md'));
+	assert.ok(!isPostFile('README.md'));
+	assert.ok(!isPostFile('notes.txt'));
+});
+
+test('본문이 비어 있어도 글이 된다', () => {
+	const post = toPost('empty.md', "---\ntitle: '빈 글'\n---\n");
+	assert.equal(post.title, '빈 글');
+	assert.equal(post.html, '');
 });

@@ -8,7 +8,7 @@
 // 사용법:
 //   npm run seal                          # 터미널에서 비밀번호를 직접 입력
 //   PRIVATE_PASSWORD='...' npm run seal   # 환경 변수로 전달
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
 import { marked } from 'marked';
 import { seal } from '../src/lib/private/cipher.js';
@@ -45,8 +45,11 @@ export function toPost(fileName, raw) {
 /** 최신 글이 먼저, 날짜가 같으면 slug 순. */
 export const comparePosts = (a, b) => b.pubDate.localeCompare(a.pubDate) || a.slug.localeCompare(b.slug);
 
+/** 게시판 글로 쓸 파일인지. README 같은 안내 문서는 제외한다. */
+export const isPostFile = (name) => name.endsWith('.md') && !/^readme\.md$/i.test(name);
+
 async function readPosts() {
-	const files = (await readdir(SOURCE_DIR).catch(() => [])).filter((f) => f.endsWith('.md'));
+	const files = (await readdir(SOURCE_DIR).catch(() => [])).filter(isPostFile);
 	const posts = await Promise.all(files.map(async (f) => toPost(f, await readFile(new URL(f, SOURCE_DIR), 'utf8'))));
 	return posts.sort(comparePosts);
 }
@@ -69,6 +72,7 @@ async function main() {
 		console.error(`비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 합니다.`);
 		process.exit(1);
 	}
+	await mkdir(new URL('.', OUTPUT_FILE), { recursive: true });
 	await writeFile(OUTPUT_FILE, JSON.stringify(await seal({ posts }, password)) + '\n');
 	console.log(`글 ${posts.length}개를 암호화했습니다 -> src/data/private.sealed.json`);
 }
