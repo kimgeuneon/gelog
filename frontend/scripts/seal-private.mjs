@@ -11,7 +11,7 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
 import { marked } from 'marked';
-import { seal } from '../src/lib/private/cipher.js';
+import { seal } from '../src/features/private-board/lib/cipher.js';
 import { bundleDeck } from './bundle-deck.mjs';
 
 const SOURCE_DIR = new URL('../private/', import.meta.url);

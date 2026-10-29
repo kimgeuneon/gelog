@@ -1,10 +1,10 @@
 ---
-import HiddenLink from '../../components/HiddenLink.astro';
-import PageHero from '../../components/PageHero.astro';
-import PostCard from '../../components/PostCard.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
-import Page from '../../layouts/Page.astro';
-import { getSortedPosts } from '../../lib/posts';
+import HiddenLink from '@/components/HiddenLink.astro';
+import PageHero from '@/components/PageHero.astro';
+import PostCard from '@/components/PostCard.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '@/config/site';
+import Page from '@/layouts/Page.astro';
+import { getSortedPosts } from '@/shared/lib/posts';
 
 const posts = await getSortedPosts();
 ---

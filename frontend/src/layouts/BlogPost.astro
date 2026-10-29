@@ -1,10 +1,10 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import Comments from '../components/Comments.astro';
-import PageHero from '../components/PageHero.astro';
-import PostFooterNav from '../components/PostFooterNav.astro';
-import type { Post } from '../lib/posts';
-import Page from './Page.astro';
+import Comments from '@/features/comments/Comments.astro';
+import PageHero from '@/components/PageHero.astro';
+import PostFooterNav from '@/components/PostFooterNav.astro';
+import type { Post } from '@/shared/lib/posts';
+import Page from '@/layouts/Page.astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	id: string;

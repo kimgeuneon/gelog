@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { exportKey, importKey, openWithKey, seal, unlock } from '../src/lib/private/cipher.js';
+import { exportKey, importKey, openWithKey, seal, unlock } from '../src/features/private-board/lib/cipher.js';
 import { comparePosts, isPostFile, parseFrontMatter, toPost } from '../scripts/seal-private.mjs';
 
 const ITER = 1_000; // 테스트는 빠르게
