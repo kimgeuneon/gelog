@@ -1,11 +1,12 @@
 // 비공개 게시판 암호화 형식. 브라우저(복호화)와 seal 스크립트(암호화)가 이 파일 하나를 같이 쓴다.
 // 형식이나 알고리즘을 바꾸면 양쪽이 함께 바뀐다(단일 진실 공급원).
 //
-// 봉투(envelope) 형식 v1:
-//   { v: 1, kdf: 'PBKDF2-SHA256', iterations, salt, iv, data }  (salt/iv/data는 base64)
+// 봉투(envelope) 형식 v2:
+//   게시판: { v: 2, kdf: 'PBKDF2-SHA256', iterations, salt, iv, data }  (salt/iv/data는 base64)
+//   부속 파일(발표 등): { v: 2, iv, data }  — 게시판과 같은 키로 잠근다. salt는 게시판 봉투에만 있다.
 //   key = PBKDF2-SHA256(password, salt, iterations) → AES-256-GCM
 
-export const FORMAT_VERSION = 1;
+export const FORMAT_VERSION = 2;
 export const DEFAULT_ITERATIONS = 600_000;
 
 const subtle = globalThis.crypto.subtle;
@@ -46,16 +47,34 @@ export async function deriveKey(password, salt, iterations, usages) {
 }
 
 /**
+ * 이미 만든 키로 값을 잠근다(부속 파일용). iv는 매번 새로 뽑는다.
+ * @param {unknown} payload
+ * @param {CryptoKey} key
+ */
+export async function sealWithKey(payload, key) {
+	const iv = crypto.getRandomValues(new Uint8Array(12));
+	const data = new Uint8Array(await subtle.encrypt({ name: 'AES-GCM', iv }, key, encoder.encode(JSON.stringify(payload))));
+	return { v: FORMAT_VERSION, iv: toBase64(iv), data: toBase64(data) };
+}
+
+/**
+ * 비밀번호로 새 키를 만든다. header(salt, iterations)를 게시판 봉투에 붙여야 나중에 같은 키를 다시 만들 수 있다.
+ * @param {string} password
+ */
+export async function createKey(password, iterations = DEFAULT_ITERATIONS) {
+	const salt = crypto.getRandomValues(new Uint8Array(16));
+	const key = await deriveKey(password, salt, iterations, ['encrypt']);
+	return { key, header: { v: FORMAT_VERSION, kdf: 'PBKDF2-SHA256', iterations, salt: toBase64(salt) } };
+}
+
+/**
  * 값을 JSON으로 직렬화해 암호화한다.
  * @param {unknown} payload
  * @param {string} password
  */
 export async function seal(payload, password, iterations = DEFAULT_ITERATIONS) {
-	const salt = crypto.getRandomValues(new Uint8Array(16));
-	const iv = crypto.getRandomValues(new Uint8Array(12));
-	const key = await deriveKey(password, salt, iterations, ['encrypt']);
-	const data = new Uint8Array(await subtle.encrypt({ name: 'AES-GCM', iv }, key, encoder.encode(JSON.stringify(payload))));
-	return { v: FORMAT_VERSION, kdf: 'PBKDF2-SHA256', iterations, salt: toBase64(salt), iv: toBase64(iv), data: toBase64(data) };
+	const { key, header } = await createKey(password, iterations);
+	return { ...header, ...(await sealWithKey(payload, key)) };
 }
 
 /**

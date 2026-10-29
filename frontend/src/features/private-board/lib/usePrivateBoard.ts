@@ -1,34 +1,48 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { failure, info, NO_STATUS, type Status } from '@/shared/ui/status';
 import { exportKey, importKey, openWithKey, unlock } from './cipher.js';
-import type { Envelope, KeyStore, PrivatePayload, PrivatePost } from './types';
+import type { BoardSource, Envelope, KeyStore, PrivatePayload, PrivatePost } from './types';
+
+type Session = { key: CryptoKey; posts: PrivatePost[] };
 
 /**
- * 잠금 해제·잠금 상태. 복호화는 cipher, 키 보관은 주입받은 KeyStore에 맡긴다(DIP).
- * posts가 null이면 잠긴 상태다.
+ * 게시판 봉투를 받아 두고, 잠금 해제·잠금·부속 파일 열기를 담당한다.
+ * 복호화는 cipher, 파일은 BoardSource, 키 보관은 KeyStore에 맡긴다(DIP).
+ *
+ * - envelope: undefined = 받는 중, null = 아직 글 없음(파일 없음)
+ * - session: null = 잠김
  */
-export function usePrivateBoard(envelope: Envelope | null, keys: KeyStore) {
-	const [posts, setPosts] = useState<PrivatePost[] | null>(null);
+export function usePrivateBoard(source: BoardSource, keys: KeyStore) {
+	const [envelope, setEnvelope] = useState<Envelope | null | undefined>(undefined);
+	const [session, setSession] = useState<Session | null>(null);
 	const [status, setStatus] = useState<Status>(NO_STATUS);
 	const [busy, setBusy] = useState(false);
 
-	// 같은 탭에서 이미 열었으면 다시 묻지 않는다.
+	// 봉투를 받고, 같은 탭에서 이미 열었으면 저장된 키로 바로 연다.
 	useEffect(() => {
-		const raw = keys.load();
-		if (!envelope || !raw) return;
 		let cancelled = false;
 		(async () => {
 			try {
-				const payload = (await openWithKey(envelope, await importKey(raw))) as PrivatePayload;
-				if (!cancelled) setPosts(payload.posts);
-			} catch {
-				keys.clear(); // 게시판이 다시 암호화되어 예전 키가 맞지 않는 경우
+				const env = await source.loadBoard();
+				if (cancelled) return;
+				setEnvelope(env);
+				const raw = env && keys.load();
+				if (!raw) return;
+				try {
+					const key = await importKey(raw);
+					const payload = (await openWithKey(env, key)) as PrivatePayload;
+					if (!cancelled) setSession({ key, posts: payload.posts });
+				} catch {
+					keys.clear(); // 게시판이 다시 암호화되어 예전 키가 맞지 않는 경우
+				}
+			} catch (err) {
+				if (!cancelled) setStatus(failure(err instanceof Error ? err.message : '게시판을 불러오지 못했습니다.'));
 			}
 		})();
 		return () => {
 			cancelled = true;
 		};
-	}, [envelope, keys]);
+	}, [source, keys]);
 
 	/** 성공하면 true. */
 	async function open(password: string): Promise<boolean> {
@@ -38,7 +52,7 @@ export function usePrivateBoard(envelope: Envelope | null, keys: KeyStore) {
 		try {
 			const { payload, key } = await unlock(envelope, password);
 			keys.save(await exportKey(key));
-			setPosts((payload as PrivatePayload).posts);
+			setSession({ key, posts: (payload as PrivatePayload).posts });
 			setStatus(NO_STATUS);
 			return true;
 		} catch {
@@ -51,9 +65,18 @@ export function usePrivateBoard(envelope: Envelope | null, keys: KeyStore) {
 
 	function lock() {
 		keys.clear();
-		setPosts(null);
+		setSession(null);
 		setStatus(NO_STATUS);
 	}
 
-	return { posts, status, busy, open, lock };
+	/** 글에 딸린 부속 파일(발표 등)을 받아서 연다. 글마다 받으므로 큰 파일이 첫 화면을 늦추지 않는다. */
+	const openPart = useCallback(
+		async <T,>(file: string): Promise<T> => {
+			if (!session) throw new Error('잠겨 있습니다.');
+			return openWithKey(await source.loadPart(file), session.key) as Promise<T>;
+		},
+		[source, session],
+	);
+
+	return { envelope, posts: session?.posts ?? null, status, busy, open, lock, openPart };
 }

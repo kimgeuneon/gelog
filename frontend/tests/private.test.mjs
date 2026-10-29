@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { exportKey, importKey, openWithKey, seal, unlock } from '../src/features/private-board/lib/cipher.js';
-import { comparePosts, isPostFile, parseFrontMatter, toPost } from '../scripts/seal-private.mjs';
+import { createKey, exportKey, importKey, openWithKey, seal, sealWithKey, unlock } from '../src/features/private-board/lib/cipher.js';
+import { comparePosts, isPostFile, parseFrontMatter, sealDeck, toPost } from '../scripts/seal-private.mjs';
 
 const ITER = 1_000; // 테스트는 빠르게
 
@@ -94,4 +94,27 @@ test('수 MB짜리 내용도 암호화·복호화된다 (영상이 든 발표)',
 	const env = await seal({ big }, 'correct-horse', ITER);
 	const { payload } = await unlock(env, 'correct-horse');
 	assert.equal(payload.big.length, big.length);
+});
+
+test('게시판 봉투의 비밀번호로 만든 키가 부속 파일도 연다', async () => {
+	const { key, header } = await createKey('correct-horse', ITER);
+	const board = { ...header, ...(await sealWithKey({ posts: [] }, key)) };
+	const part = await sealWithKey('<html>deck</html>', key);
+	const { key: opened } = await unlock(board, 'correct-horse');
+	assert.equal(await openWithKey(part, opened), '<html>deck</html>');
+	assert.ok(!('salt' in part), '부속 파일에는 salt가 없다');
+});
+
+test('발표는 글에서 떼어 따로 잠그고, 글에는 파일 이름만 남는다', async () => {
+	const { key, header } = await createKey('correct-horse', ITER);
+	const { post, file } = await sealDeck({ slug: 'talk', title: 'T', html: '<p>x</p>', deck: '<html>BIG</html>' }, key);
+	// 브라우저가 하듯 게시판 봉투를 비밀번호로 열어 얻은 키로 발표 파일을 연다.
+	const board = { ...header, ...(await sealWithKey({ posts: [post] }, key)) };
+	const { key: readKey } = await unlock(board, 'correct-horse');
+	assert.equal(post.deck, undefined);
+	assert.match(post.deckFile, /^talk\.[0-9a-f]{8}\.deck\.sealed\.json$/);
+	assert.equal(file.name, post.deckFile);
+	assert.ok(!JSON.stringify(file.body).includes('BIG'));
+	assert.equal(await openWithKey(file.body, readKey), '<html>BIG</html>');
+	assert.deepEqual(await sealDeck({ slug: 'plain', html: '' }, key), { post: { slug: 'plain', html: '' }, file: null });
 });

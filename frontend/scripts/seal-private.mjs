@@ -2,20 +2,24 @@
 //
 //   frontend/private/*.md  (git에 올리지 않음)
 //     → 마크다운을 HTML로 변환 (front matter에 deck: '폴더'가 있으면 private/decks/폴더 발표도 함께 묶음)
-//     → 비밀번호로 암호화 (형식은 src/lib/private/cipher.js 하나가 정한다)
-//     → src/data/private.sealed.json  (이 파일만 커밋)
+//     → 비밀번호로 암호화 (형식은 src/features/private-board/lib/cipher.js 하나가 정한다)
+//     → public/private/board.sealed.json          글 목록·본문 (작다. 잠금 화면이 바로 뜨게)
+//       public/private/<slug>.<hash>.deck.sealed.json  발표 슬라이드 (크다. 그 글을 열 때만 받는다)
+//     이 암호문 파일들만 커밋한다.
 //
 // 사용법:
 //   npm run seal                          # 터미널에서 비밀번호를 직접 입력
 //   PRIVATE_PASSWORD='...' npm run seal   # 환경 변수로 전달
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline';
 import { marked } from 'marked';
-import { seal } from '../src/features/private-board/lib/cipher.js';
+import { createKey, sealWithKey } from '../src/features/private-board/lib/cipher.js';
+import { BOARD_FILE, deckFileName } from '../src/features/private-board/lib/files.js';
 import { bundleDeck } from './bundle-deck.mjs';
 
 const SOURCE_DIR = new URL('../private/', import.meta.url);
-const OUTPUT_FILE = new URL('../src/data/private.sealed.json', import.meta.url);
+const OUTPUT_DIR = new URL('../public/private/', import.meta.url);
 const MIN_PASSWORD_LENGTH = 8;
 
 /** front matter(--- ... ---)와 본문을 나눈다. */
@@ -76,6 +80,16 @@ async function askPassword() {
 	return password;
 }
 
+/** 발표를 글과 따로 잠근다. 파일 이름에 내용 해시를 넣어 캐시된 옛 파일과 섞이지 않게 한다. */
+export async function sealDeck(post, key) {
+	const { deck, ...rest } = post;
+	if (!deck) return { post: rest, file: null };
+	const part = await sealWithKey(deck, key);
+	const hash = createHash('sha256').update(part.data).digest('hex').slice(0, 8);
+	const name = deckFileName(post.slug, hash);
+	return { post: { ...rest, deckFile: name }, file: { name, body: part } };
+}
+
 async function main() {
 	const posts = await readPosts();
 	const password = await askPassword();
@@ -83,9 +97,22 @@ async function main() {
 		console.error(`비밀번호는 ${MIN_PASSWORD_LENGTH}자 이상이어야 합니다.`);
 		process.exit(1);
 	}
-	await mkdir(new URL('.', OUTPUT_FILE), { recursive: true });
-	await writeFile(OUTPUT_FILE, JSON.stringify(await seal({ posts }, password)) + '\n');
-	console.log(`글 ${posts.length}개를 암호화했습니다 -> src/data/private.sealed.json`);
+	await mkdir(OUTPUT_DIR, { recursive: true });
+	for (const old of (await readdir(OUTPUT_DIR)).filter((f) => f.endsWith('.sealed.json'))) {
+		await rm(new URL(old, OUTPUT_DIR));
+	}
+
+	// 키를 한 번 만들어 게시판과 발표 파일을 같은 키로 잠근다. 비밀번호 하나로 전부 열린다.
+	const { key, header } = await createKey(password);
+	const sealed = await Promise.all(posts.map((p) => sealDeck(p, key)));
+	for (const { file } of sealed) {
+		if (file) await writeFile(new URL(file.name, OUTPUT_DIR), JSON.stringify(file.body) + '\n');
+	}
+	// 게시판 봉투에만 salt가 들어간다. 브라우저는 이걸로 키를 만들어 발표 파일도 연다.
+	const board = await sealWithKey({ posts: sealed.map((s) => s.post) }, key);
+	await writeFile(new URL(BOARD_FILE, OUTPUT_DIR), JSON.stringify({ ...header, ...board }) + '\n');
+	const decks = sealed.filter((s) => s.file).length;
+	console.log(`글 ${posts.length}개(발표 ${decks}개)를 암호화했습니다 -> public/private/`);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) await main();

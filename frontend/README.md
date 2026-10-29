@@ -61,7 +61,8 @@ tests/                      node:test
 
 - 암호화: PBKDF2-SHA256(600,000회) → AES-256-GCM. 형식은 `src/features/private-board/lib/cipher.js` 하나가 정하고, 브라우저와 seal 스크립트가 같이 씁니다.
 - 원본 글: `private/*.md` (gitignore, 커밋되지 않음)
-- 암호문: `src/data/private.sealed.json` (커밋)
+- 암호문: `public/private/board.sealed.json`(글 목록·본문)과 `public/private/<slug>.<hash>.deck.sealed.json`(발표). 커밋한다.
+- 발표 파일은 그 글을 열 때만 받는다. 게시판 봉투에만 salt가 있고, 발표 파일은 같은 키로 잠근다.
 - 한 번 열면 같은 탭에서는 다시 묻지 않고, "잠그기"나 탭을 닫으면 다시 잠깁니다.
 - 검색 엔진 제외(noindex), 사이트맵 제외.
 
@@ -80,7 +81,7 @@ pubDate: '2026-10-28'
 
 ```bash
 npm run seal          # 비밀번호 입력 (8자 이상)
-git add src/data/private.sealed.json && git commit -m "Update private board" && git push
+git add public/private && git commit -m "Update private board" && git push
 ```
 
 비밀번호를 바꾸려면 새 비밀번호로 다시 `npm run seal` 하면 됩니다.
