@@ -1,4 +1,6 @@
 ---
+import CommentsIsland from './CommentsIsland';
+
 type Props = { slug: string };
 
 const { slug } = Astro.props;
@@ -8,87 +10,48 @@ const apiUrl = (import.meta.env.PUBLIC_API_URL ?? '').replace(/\/$/, '');
 
 {
 	apiUrl && (
-		<section class="comments" data-comments data-api={apiUrl} data-slug={slug}>
-			<div class="section-head">
-				<h2>
-					댓글 <span class="count" data-count />
-				</h2>
-			</div>
-
-			<ul class="comment-list" data-list />
-			<p class="empty" data-empty hidden>
-				아직 댓글이 없습니다. 첫 댓글을 남겨 주세요.
-			</p>
-
-			<form class="comment-form panel" data-form>
-				<div class="row">
-					<input class="field" name="nickname" placeholder="닉네임" maxlength="30" required autocomplete="nickname" />
-					<input
-						class="field"
-						name="password"
-						type="password"
-						placeholder="비밀번호 (삭제할 때 필요)"
-						minlength="4"
-						maxlength="64"
-						required
-						autocomplete="new-password"
-					/>
-				</div>
-				<textarea class="field" name="content" placeholder="댓글을 입력하세요" maxlength="1000" rows="4" required />
-				<div class="actions">
-					<p class="status" data-status role="status" />
-					<button class="btn-primary" type="submit">등록</button>
-				</div>
-			</form>
+		<section class="comments">
+			<CommentsIsland client:visible apiUrl={apiUrl} slug={slug} />
 		</section>
 	)
 }
 
-<script>
-	import { mountComments } from '../lib/comments';
-
-	document.querySelectorAll<HTMLElement>('[data-comments]').forEach(mountComments);
-</script>
-
 <style>
-	.comment-form {
-		display: grid;
-		gap: 0.7rem;
-	}
+	/* 안쪽은 React가 그리므로 Astro 범위 속성이 없다. .comments 아래를 :global로 잡는다. */
 	.comments {
 		margin-top: 4rem;
 		padding-top: 2.5rem;
 		border-top: 1px solid var(--border);
 	}
-	.count {
+	.comments :global(.count) {
 		margin-left: 0.3rem;
 		font-size: 0.9em;
 		color: var(--accent);
 	}
-	.comment-list {
+	.comments :global(.comment-list) {
 		display: grid;
 		gap: 0.8rem;
 		margin: 0 0 1.5rem;
 		padding: 0;
 		list-style: none;
 	}
-	.comment-list :global(li) {
+	.comments :global(.comment-list li) {
 		padding: 1rem 1.2rem;
 		background: var(--surface);
 		border: 1px solid var(--border);
 		border-radius: var(--radius);
 	}
-	.comment-list :global(.head) {
+	.comments :global(.comment-list .head) {
 		display: flex;
 		align-items: baseline;
 		gap: 0.6rem;
 		margin-bottom: 0.35rem;
 	}
-	.comment-list :global(time) {
+	.comments :global(.comment-list time) {
 		font-size: 0.8rem;
 		color: var(--muted);
 	}
-	.comment-list :global(.delete) {
+	.comments :global(.comment-list .delete) {
 		margin-left: auto;
 		padding: 0;
 		font-size: 0.8rem;
@@ -97,31 +60,35 @@ const apiUrl = (import.meta.env.PUBLIC_API_URL ?? '').replace(/\/$/, '');
 		border: none;
 		cursor: pointer;
 	}
-	.comment-list :global(.delete:hover) {
+	.comments :global(.comment-list .delete:hover) {
 		color: #e5484d;
 	}
-	.comment-list :global(p) {
+	.comments :global(.comment-list p) {
 		margin: 0;
 		white-space: pre-wrap;
 		word-break: break-word;
 	}
-	.empty {
+	.comments :global(.empty) {
 		margin: 0 0 1.5rem;
 		color: var(--muted);
 	}
-	.row {
+	.comments :global(.comment-form) {
+		display: grid;
+		gap: 0.7rem;
+	}
+	.comments :global(.row) {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 0.7rem;
 	}
-	.actions {
+	.comments :global(.actions) {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
 	}
 	@media (max-width: 600px) {
-		.row {
+		.comments :global(.row) {
 			grid-template-columns: 1fr;
 		}
 	}
