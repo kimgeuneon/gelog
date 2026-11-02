@@ -6,7 +6,8 @@ export type PostWithNeighbors = { post: Post; prev: Post | null; next: Post | nu
 
 /**
  * 최신 글이 먼저, 날짜가 같으면 id 순. 모든 페이지가 이 순서를 쓴다.
- * 같은 날 여러 글을 올리면 pubDate에 시각까지 적어야 올린 순서가 유지된다. (예: '2026-11-03T02:35:00+09:00')
+ * pubDate는 시각과 시간대까지 적는다. (예: '2026-11-03T02:35:00+09:00')
+ * 날짜만 적으면 UTC 자정으로 읽혀서, 같은 날 시각을 적은 글보다 뒤늦게 올린 것으로 계산된다.
  */
 export function comparePosts(a: Post, b: Post): number {
 	return b.data.pubDate.valueOf() - a.data.pubDate.valueOf() || a.id.localeCompare(b.id);

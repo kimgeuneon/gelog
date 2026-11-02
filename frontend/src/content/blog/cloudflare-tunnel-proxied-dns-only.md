@@ -1,7 +1,7 @@
 ---
 title: 'Cloudflare Tunnel, Proxied, DNS only 한 번에 정리하기'
 description: 'Cloudflare DNS의 Proxied와 DNS only 차이, 포트를 열지 않고 서버를 공개하는 Cloudflare Tunnel을 정리했습니다.'
-pubDate: '2026-11-03'
+pubDate: '2026-11-03T02:07:00+09:00'
 ---
 
 Cloudflare에 도메인을 연결하면 DNS 레코드마다 **주황색 구름(Proxied)** 과 **회색 구름(DNS only)** 토글이 보입니다. 그리고 집 서버나 사내망 서버를 공개할 때는 **Cloudflare Tunnel**이라는 선택지도 있습니다. 셋 다 "도메인으로 서버에 접속하게 만든다"는 점은 같지만, 트래픽이 흐르는 경로가 완전히 다릅니다.

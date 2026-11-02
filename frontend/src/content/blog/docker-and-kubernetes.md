@@ -1,7 +1,7 @@
 ---
 title: 'Docker와 Kubernetes 정리: 빌드부터 레지스트리, 서버 운영까지'
 description: '컨테이너 개념, 이미지 빌드, 레지스트리 push/pull, 서버에서 Docker와 Kubernetes가 어떻게 다른지 정리했습니다.'
-pubDate: '2026-11-03'
+pubDate: '2026-11-03T02:06:00+09:00'
 ---
 
 "Docker랑 Kubernetes가 뭐가 달라요?"라는 질문에는 한 줄로 답할 수 있습니다.
