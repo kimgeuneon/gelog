@@ -1,7 +1,6 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import { withBase } from '@/shared/lib/url';
-// Import the global.css file here so that it is included on
-// all pages through the use of the <BaseHead /> component.
 import '../styles/global.css';
 import { SITE_TITLE } from '@/config/site';
 
@@ -9,11 +8,13 @@ interface Props {
 	title: string;
 	description: string;
 	noindex?: boolean;
+	/** 페이지 사이 전환 애니메이션(View Transitions). 해시 라우팅을 쓰는 페이지는 끈다. */
+	transitions?: boolean;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, transitions = true } = Astro.props;
 ---
 
 <!-- Global Metadata -->
@@ -24,13 +25,20 @@ const { title, description, noindex = false } = Astro.props;
 <link rel="apple-touch-icon" href={withBase('/apple-touch-icon.png')} />
 <link rel="icon" href={withBase('/favicon.ico')} />
 <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
-<link
-	rel="alternate"
-	type="application/rss+xml"
-	title={SITE_TITLE}
-	href={new URL('rss.xml', Astro.site)}
-/>
+<link rel="alternate" type="application/rss+xml" title={SITE_TITLE} href={new URL('rss.xml', Astro.site)} />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <meta name="generator" content={Astro.generator} />
+
+<!-- 저장된 테마를 첫 그리기 전에 적용해 깜빡임을 막는다. 페이지 전환 뒤에도 다시 실행된다. -->
+<script is:inline data-astro-rerun>
+	(() => {
+		const t = localStorage.getItem('theme');
+		if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+		const dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+		document.documentElement.classList.toggle('is-dark', dark);
+	})();
+</script>
 
 <!-- Canonical URL -->
 <link rel="canonical" href={canonicalURL} />
@@ -48,3 +56,5 @@ const { title, description, noindex = false } = Astro.props;
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
+
+{transitions && <ClientRouter />}

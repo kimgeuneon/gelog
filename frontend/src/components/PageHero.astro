@@ -1,39 +1,33 @@
 ---
-import { withBase } from '@/shared/lib/url';
-type Props = { lead?: string };
+type Props = { lead?: string; eyebrow?: string };
 
-const { lead } = Astro.props;
+const { lead, eyebrow } = Astro.props;
 ---
 
 <section class="hero">
-	<img class="logo" src={withBase('/favicon.svg')} alt="gelog 로고" width="72" height="72" />
+	{eyebrow && <p class="eyebrow">{eyebrow}</p>}
 	<h1><slot /></h1>
 	{lead && <p class="lead">{lead}</p>}
 </section>
 
 <style>
 	.hero {
-		padding: 2.5rem 0 3.5rem;
+		padding-bottom: var(--s-6);
 	}
-	.logo {
-		display: block;
-		width: 72px;
-		height: 72px;
-		margin-bottom: 1.6rem;
-		border-radius: 20px;
-		box-shadow: 0 10px 34px rgba(124, 92, 255, 0.42);
+	.eyebrow {
+		margin: 0 0 var(--s-3);
 	}
 	h1 {
 		margin: 0;
-		font-size: clamp(2.1rem, 6vw, 3.2rem);
-		font-weight: 800;
-		line-height: 1.22;
-		letter-spacing: -0.035em;
+		font-size: var(--t-3);
+		line-height: 1.25;
 	}
 	.lead {
-		margin: 1.1rem 0 0;
-		font-size: 1.1rem;
-		line-height: 1.65;
+		margin: var(--s-3) 0 0;
+		max-width: 60ch;
+		font-size: var(--t-1);
+		line-height: 1.6;
 		color: var(--muted);
+		text-wrap: pretty;
 	}
 </style>

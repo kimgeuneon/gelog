@@ -1,8 +1,9 @@
 ---
+import type { MarkdownHeading } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import Comments from '@/features/comments/Comments.astro';
-import PageHero from '@/components/PageHero.astro';
 import PostFooterNav from '@/components/PostFooterNav.astro';
+import Toc from '@/components/Toc.astro';
 import type { Post } from '@/shared/lib/posts';
 import Page from '@/layouts/Page.astro';
 
@@ -11,27 +12,94 @@ type Props = CollectionEntry<'blog'>['data'] & {
 	posts: Post[];
 	prev: Post | null;
 	next: Post | null;
+	headings: MarkdownHeading[];
 };
 
-// pubDate / updatedDate 는 스키마(정렬·RSS용)에만 저장하고 화면에는 표시하지 않는다.
-const { title, description, id, posts, prev, next } = Astro.props;
+// pubDate / updatedDate 는 정렬·RSS용이라 화면에 표시하지 않는다.
+const { title, description, id, posts, prev, next, headings } = Astro.props;
 ---
 
-<Page title={title} description={description}>
-	<PageHero lead={description}>
-		<span class="gradient-text">{title}</span>
-	</PageHero>
+<Page title={title} description={description} wide>
+	<div class="read-progress" aria-hidden="true"></div>
 
-	<section>
-		<div class="section-head">
-			<h2>본문</h2>
-		</div>
-		<article class="prose">
-			<slot />
+	<div class="post-layout">
+		<article>
+			<header class="post-head">
+				<h1>{title}</h1>
+				<p class="lead">{description}</p>
+			</header>
+
+			<div class="prose">
+				<slot />
+			</div>
+
+			<Comments slug={id} />
+			<PostFooterNav currentId={id} posts={posts} prev={prev} next={next} />
 		</article>
-	</section>
 
-	<Comments slug={id} />
-
-	<PostFooterNav currentId={id} posts={posts} prev={prev} next={next} />
+		<aside class="side">
+			<Toc headings={headings} />
+		</aside>
+	</div>
 </Page>
+
+<style>
+	.post-layout {
+		display: grid;
+		grid-template-columns: minmax(0, var(--content)) 1fr;
+		gap: var(--s-7);
+		justify-content: center;
+	}
+	.side {
+		max-width: 240px;
+	}
+	.post-head {
+		margin-bottom: var(--s-6);
+	}
+	.post-head h1 {
+		margin: 0;
+		font-size: var(--t-3);
+		line-height: 1.25;
+	}
+	.lead {
+		margin: var(--s-3) 0 0;
+		font-size: var(--t-1);
+		line-height: 1.6;
+		color: var(--muted);
+		text-wrap: pretty;
+	}
+	@media (max-width: 1023px) {
+		.post-layout {
+			grid-template-columns: minmax(0, var(--content));
+		}
+		.side {
+			display: none;
+		}
+	}
+
+	/* 읽은 만큼 차는 가는 줄. 스크롤에 묶인 애니메이션을 지원하는 브라우저에서만 보인다. */
+	.read-progress {
+		display: none;
+	}
+	@supports (animation-timeline: scroll()) {
+		.read-progress {
+			display: block;
+			position: fixed;
+			inset: 56px 0 auto 0;
+			z-index: 11;
+			height: 2px;
+			background: var(--accent);
+			transform-origin: 0 50%;
+			animation: read-grow linear both;
+			animation-timeline: scroll(root);
+		}
+		@keyframes read-grow {
+			from {
+				transform: scaleX(0);
+			}
+			to {
+				transform: scaleX(1);
+			}
+		}
+	}
+</style>

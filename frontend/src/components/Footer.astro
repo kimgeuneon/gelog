@@ -1,11 +1,13 @@
 ---
+import { withBase } from '@/shared/lib/url';
+
 const today = new Date();
 ---
 
 <footer>
 	<div class="inner">
-		<span>&copy; {today.getFullYear()} gelog</span>
-		<a href="https://github.com/kimgeuneon" target="_blank" rel="noopener">GitHub</a>
+		<span class="mono">&copy; {today.getFullYear()} gelog</span>
+		<a class="mono" href={withBase('/rss.xml')}>RSS</a>
 	</div>
 </footer>
 
@@ -17,17 +19,15 @@ const today = new Date();
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		max-width: var(--content);
+		max-width: var(--wide);
 		margin: 0 auto;
-		padding: 1.6rem 1.25rem 2.4rem;
-		font-size: 0.9rem;
-		color: var(--muted);
+		padding: var(--s-4);
 	}
 	a {
 		color: var(--muted);
 		text-decoration: none;
 	}
 	a:hover {
-		color: var(--accent);
+		color: var(--text);
 	}
 </style>

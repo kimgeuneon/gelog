@@ -9,20 +9,12 @@ import { getSortedPosts } from '@/shared/lib/posts';
 const posts = await getSortedPosts();
 ---
 
-<Page title={SITE_TITLE} description={SITE_DESCRIPTION}>
-	<PageHero lead={`${SITE_TITLE} · 글 ${posts.length}개`}>
-		블로그<br />
-		<span class="gradient-text">모든 글</span>
+<Page title={`Blog · ${SITE_TITLE}`} description={SITE_DESCRIPTION}>
+	<PageHero eyebrow={`글 ${posts.length}개`} lead="로봇, 평가, 인프라, 그리고 그 과정에서 배운 것들을 적습니다.">
+		모든 글<HiddenLink href="/private" label="Private" />
 	</PageHero>
 
-	<section>
-		<div class="section-head">
-			<h2>
-				전체 글<HiddenLink href="/private" label="Private" />
-			</h2>
-		</div>
-		<div class="card-grid">
-			{posts.map((post) => <PostCard post={post} />)}
-		</div>
-	</section>
+	<ol class="entries">
+		{posts.map((post) => <PostCard post={post} />)}
+	</ol>
 </Page>

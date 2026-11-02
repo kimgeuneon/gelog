@@ -1,28 +1,70 @@
 ---
 import { withBase } from '@/shared/lib/url';
-import PageHero from '@/components/PageHero.astro';
 import PostCard from '@/components/PostCard.astro';
+import HiddenLink from '@/components/HiddenLink.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '@/config/site';
 import Page from '@/layouts/Page.astro';
 import { getSortedPosts } from '@/shared/lib/posts';
 
-const posts = (await getSortedPosts()).slice(0, 6);
+const all = await getSortedPosts();
+const posts = all.slice(0, 5);
 ---
 
-<Page title={SITE_TITLE} description={SITE_DESCRIPTION}>
-	<PageHero lead={`${SITE_TITLE} · ${SITE_DESCRIPTION}`}>
-		안녕하세요.<br />
-		김근언입니다.<br />
-		<span class="gradient-text">괴물이 되어가는 중.</span>
-	</PageHero>
+<Page title={SITE_TITLE} description={SITE_DESCRIPTION} wide>
+	<div class="bento">
+		<section class="tile intro">
+			<p class="eyebrow">KRAFTON Robot Learning</p>
+			<h1>
+				안녕하세요, gekim입니다.<br />
+				<span class="muted">괴물이 되는 중.</span>
+			</h1>
+		</section>
 
-	<section>
-		<div class="section-head">
-			<h2>최근 글</h2>
-			<a href={withBase('/blog')}>전체 보기 →</a>
-		</div>
-		<div class="card-grid">
-			{posts.map((post) => <PostCard post={post} />)}
-		</div>
-	</section>
+		<section class="tile posts">
+			<div class="section-head">
+				<h2>최근 글<HiddenLink href="/private" label="Private" /></h2>
+				<a href={withBase('/blog')}>전체 {all.length}개 →</a>
+			</div>
+			<ol class="entries">
+				{posts.map((post) => <PostCard post={post} />)}
+			</ol>
+		</section>
+
+	</div>
 </Page>
+
+<style>
+	.bento {
+		display: grid;
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		gap: var(--s-3);
+	}
+	.intro {
+		grid-column: span 6;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		min-height: 320px;
+		padding: var(--s-5);
+	}
+	.intro h1 {
+		margin: 0;
+		font-size: var(--t-4);
+		line-height: 1.15;
+	}
+	.muted {
+		color: var(--muted);
+	}
+	.posts {
+		grid-column: span 6;
+	}
+	.posts .entries li:last-child {
+		border-bottom: none;
+	}
+	@media (max-width: 900px) {
+		.intro {
+			min-height: 0;
+			padding: var(--s-4);
+		}
+	}
+</style>

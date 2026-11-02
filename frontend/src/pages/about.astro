@@ -1,28 +1,18 @@
 ---
-import { withBase } from '@/shared/lib/url';
 import PageHero from '@/components/PageHero.astro';
 import { SITE_TITLE } from '@/config/site';
 import Page from '@/layouts/Page.astro';
-
 ---
 
-<Page title={SITE_TITLE} description="김근언 자기소개">
-	<PageHero lead={`${SITE_TITLE} · @kimgeuneon`}>
-		안녕하세요.<br />
-		김근언입니다.<br />
-		<span class="gradient-text">괴물이 되어가는 중.</span>
+<Page title={`About · ${SITE_TITLE}`} description="gekim 소개">
+	<PageHero>
+		안녕하세요, gekim입니다.<br />
+		<span class="muted">괴물이 되는 중.</span>
 	</PageHero>
-
-	<section>
-		<div class="section-head">
-			<h2>링크</h2>
-		</div>
-		<div class="card-grid">
-			<a class="card" href={withBase('/blog')}>
-				<span class="card-meta">Blog</span>
-				<h3 class="card-title">모든 글 보기</h3>
-				<span class="card-more">열기 →</span>
-			</a>
-		</div>
-	</section>
 </Page>
+
+<style>
+	.muted {
+		color: var(--muted);
+	}
+</style>

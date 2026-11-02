@@ -61,7 +61,7 @@ const apiUrl = (import.meta.env.PUBLIC_API_URL ?? '').replace(/\/$/, '');
 		cursor: pointer;
 	}
 	.comments :global(.comment-list .delete:hover) {
-		color: #e5484d;
+		color: var(--danger);
 	}
 	.comments :global(.comment-list p) {
 		margin: 0;

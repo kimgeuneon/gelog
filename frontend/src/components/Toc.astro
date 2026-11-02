@@ -1,0 +1,96 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+type Props = { headings: MarkdownHeading[] };
+
+// h2, h3만 보여 준다. 더 깊은 제목은 목차에 넣지 않는다.
+const items = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{
+	items.length > 1 && (
+		<nav class="toc" aria-label="목차" data-toc>
+			<p class="eyebrow">목차</p>
+			<ol>
+				{items.map((h) => (
+					<li class:list={[`d${h.depth}`]}>
+						<a href={`#${h.slug}`}>{h.text}</a>
+					</li>
+				))}
+			</ol>
+		</nav>
+	)
+}
+
+<style>
+	.toc {
+		position: sticky;
+		top: 80px;
+		max-height: calc(100vh - 100px);
+		overflow-y: auto;
+		font-size: var(--t--1);
+		line-height: 1.5;
+	}
+	.toc .eyebrow {
+		margin: 0 0 var(--s-2);
+	}
+	ol {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+		border-left: 1px solid var(--border);
+	}
+	li a {
+		display: block;
+		padding: var(--s-1) 0 var(--s-1) var(--s-3);
+		margin-left: -1px;
+		color: var(--muted);
+		text-decoration: none;
+		border-left: 1px solid transparent;
+		transition:
+			color 0.15s var(--ease),
+			border-color 0.15s var(--ease);
+	}
+	li.d3 a {
+		padding-left: var(--s-5);
+	}
+	li a:hover {
+		color: var(--text);
+	}
+	li a.active {
+		color: var(--accent);
+		border-left-color: var(--accent);
+	}
+</style>
+
+<script>
+	// 지금 읽는 섹션의 목차 항목에 표시를 둔다.
+	function init() {
+		const toc = document.querySelector<HTMLElement>('[data-toc]');
+		if (!toc) return;
+		const links = [...toc.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')];
+		const byId = new Map(links.map((a) => [decodeURIComponent(a.hash.slice(1)), a]));
+		const headings = [...byId.keys()].map((id) => document.getElementById(id)).filter((el): el is HTMLElement => !!el);
+		if (!headings.length) return;
+
+		let current: HTMLAnchorElement | null = null;
+		const set = (id: string) => {
+			const next = byId.get(id) ?? null;
+			if (next === current) return;
+			current?.classList.remove('active');
+			next?.classList.add('active');
+			current = next;
+		};
+		const io = new IntersectionObserver(
+			(entries) => {
+				const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+				if (visible[0]) set(visible[0].target.id);
+			},
+			{ rootMargin: '-72px 0px -70% 0px', threshold: 0 },
+		);
+		headings.forEach((h) => io.observe(h));
+		set(headings[0].id);
+	}
+	init();
+	document.addEventListener('astro:page-load', init);
+</script>

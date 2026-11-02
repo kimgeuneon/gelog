@@ -1,36 +1,60 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
 
+/*
+ * 디자인 규칙
+ * - 색은 아래 변수만 쓴다. light-dark()로 라이트/다크를 한 줄에 적는다. 강조색은 링크·버튼·활성 상태에만.
+ * - 글꼴은 두 개: 본문·제목은 Pretendard, 날짜·태그·코드·브랜드는 JetBrains Mono.
+ * - 간격은 --s-* 단계만, 글자 크기는 --t-* 단계(clamp)만 쓴다.
+ * - 그라디언트, 블러, 그림자, 떠오르는 호버는 쓰지 않는다. 움직임은 transform/opacity, 200ms 이내.
+ */
 :root {
 	color-scheme: light dark;
 
-	--bg: #f7f8fc;
-	--surface: #ffffff;
-	--surface-2: #f0f2fa;
-	--text: #1a1d2e;
-	--muted: #6b7394;
-	--border: #e3e6f2;
-	--accent: #5b5bf0;
-	--accent-soft: rgba(91, 91, 240, 0.1);
-	--grad: linear-gradient(120deg, #4f8cff 0%, #7c5cff 50%, #d45cff 100%);
-	--shadow: 0 1px 2px rgba(26, 29, 46, 0.04), 0 8px 24px rgba(26, 29, 46, 0.06);
-	--shadow-hover: 0 2px 4px rgba(26, 29, 46, 0.06), 0 16px 40px rgba(91, 91, 240, 0.16);
-	--radius: 16px;
-	--content: 760px;
+	--bg: light-dark(#fcfcfd, #0c0d10);
+	--surface: light-dark(#ffffff, #14161b);
+	--surface-2: light-dark(#f2f3f6, #1b1e25);
+	--text: light-dark(#15171c, #eceef2);
+	--muted: light-dark(#646a77, #9aa1ae);
+	--border: light-dark(#e4e6eb, #262a33);
+	--border-strong: light-dark(#c9cdd6, #3a404c);
+	--accent: light-dark(oklch(0.52 0.2 262), oklch(0.76 0.15 262));
+	--accent-soft: color-mix(in oklab, var(--accent) 12%, transparent);
+	--danger: light-dark(#c0362c, #f07167);
+
+	--sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+	--mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+	/* 간격 단계 */
+	--s-1: 4px;
+	--s-2: 8px;
+	--s-3: 16px;
+	--s-4: 24px;
+	--s-5: 32px;
+	--s-6: 48px;
+	--s-7: 64px;
+	--s-8: 96px;
+
+	/* 글자 크기 단계 (화면 폭에 따라 부드럽게 변함) */
+	--t--1: clamp(0.8rem, 0.78rem + 0.15vw, 0.875rem);
+	--t-0: clamp(1rem, 0.97rem + 0.2vw, 1.0625rem);
+	--t-1: clamp(1.125rem, 1.05rem + 0.4vw, 1.25rem);
+	--t-2: clamp(1.35rem, 1.2rem + 0.8vw, 1.6rem);
+	--t-3: clamp(1.75rem, 1.4rem + 1.6vw, 2.25rem);
+	--t-4: clamp(2.25rem, 1.6rem + 3.2vw, 3.5rem);
+
+	--radius: 10px;
+	--radius-sm: 6px;
+	--content: 720px;
+	--wide: 1120px;
+	--ease: cubic-bezier(0.2, 0, 0, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--bg: #0a0c16;
-		--surface: #11142a;
-		--surface-2: #181c38;
-		--text: #e9ebf8;
-		--muted: #8d94bd;
-		--border: #20244a;
-		--accent: #8f8bff;
-		--accent-soft: rgba(143, 139, 255, 0.14);
-		--shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
-		--shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(124, 92, 255, 0.28);
-	}
+[data-theme='light'] {
+	color-scheme: light;
+}
+[data-theme='dark'] {
+	color-scheme: dark;
 }
 
 *,
@@ -40,21 +64,16 @@
 }
 
 html {
-	scroll-behavior: smooth;
+	scroll-padding-top: 80px;
 }
 
 body {
 	margin: 0;
-	font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo',
-		'Noto Sans KR', sans-serif;
-	font-size: 17px;
+	font-family: var(--sans);
+	font-size: var(--t-0);
 	line-height: 1.75;
 	color: var(--text);
-	background-color: var(--bg);
-	background-image:
-		radial-gradient(60rem 28rem at 15% -10%, rgba(79, 140, 255, 0.14), transparent 60%),
-		radial-gradient(50rem 26rem at 95% -5%, rgba(212, 92, 255, 0.12), transparent 60%);
-	background-repeat: no-repeat;
+	background: var(--bg);
 	-webkit-font-smoothing: antialiased;
 	word-break: keep-all;
 	overflow-wrap: break-word;
@@ -64,17 +83,22 @@ main {
 	width: 100%;
 	max-width: var(--content);
 	margin: 0 auto;
-	padding: 3.5rem 1.25rem 5rem;
+	padding: var(--s-7) var(--s-4) var(--s-8);
+}
+main.wide {
+	max-width: var(--wide);
 }
 
 h1,
 h2,
 h3,
 h4 {
-	margin: 0 0 0.6em;
+	margin: 0 0 var(--s-3);
+	font-weight: 700;
 	line-height: 1.3;
 	letter-spacing: -0.02em;
 	color: var(--text);
+	text-wrap: balance;
 }
 
 a {
@@ -86,11 +110,18 @@ a:hover {
 	text-decoration-thickness: 2px;
 }
 
+:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+	border-radius: var(--radius-sm);
+}
+
 ::selection {
 	background: var(--accent-soft);
 }
 
-img {
+img,
+video {
 	max-width: 100%;
 	height: auto;
 }
@@ -98,118 +129,126 @@ img {
 hr {
 	border: none;
 	border-top: 1px solid var(--border);
-	margin: 2.5rem 0;
+	margin: var(--s-5) 0;
 }
 
-.gradient-text {
-	background: var(--grad);
-	-webkit-background-clip: text;
-	background-clip: text;
-	color: transparent;
+/* ---------- 작은 글씨(날짜·태그·눈썹) ---------- */
+.mono {
+	font-family: var(--mono);
+	font-size: var(--t--1);
+	font-feature-settings: 'tnum';
+	letter-spacing: 0.01em;
+	color: var(--muted);
 }
-
-/* ---------- 공용 카드 ---------- */
-.card {
-	position: relative;
-	display: block;
-	padding: 1.4rem 1.5rem 1.3rem;
-	color: inherit;
-	text-decoration: none;
-	background: var(--surface);
-	border: 1px solid var(--border);
-	border-radius: var(--radius);
-	box-shadow: var(--shadow);
-	transition:
-		transform 0.2s ease,
-		box-shadow 0.2s ease,
-		border-color 0.2s ease;
+.eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--s-2);
+	margin-bottom: var(--s-3);
+	font-family: var(--mono);
+	font-size: var(--t--1);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--muted);
 }
-.card::before {
+.eyebrow::before {
 	content: '';
-	position: absolute;
-	inset: 0 0 auto 0;
-	height: 3px;
-	background: var(--grad);
-	border-radius: var(--radius) var(--radius) 0 0;
-	opacity: 0;
-	transition: opacity 0.2s ease;
-}
-.card:hover {
-	transform: translateY(-3px);
-	border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-	box-shadow: var(--shadow-hover);
-	text-decoration: none;
-}
-.card:hover::before {
-	opacity: 1;
-}
-.card .card-meta {
-	font-size: 0.82rem;
-	font-weight: 600;
-	color: var(--muted);
-}
-.card .card-title {
-	margin: 0.35rem 0 0.4rem;
-	font-size: 1.3rem;
-}
-.card .card-desc {
-	margin: 0;
-	font-size: 0.95rem;
-	line-height: 1.6;
-	color: var(--muted);
-}
-.card .card-more {
-	display: inline-block;
-	margin-top: 0.9rem;
-	font-size: 0.88rem;
-	font-weight: 600;
-	color: var(--accent);
-	transition: transform 0.2s ease;
-}
-.card:hover .card-more {
-	transform: translateX(4px);
+	width: 14px;
+	height: 1px;
+	background: var(--accent);
 }
 
-.card-grid {
-	display: grid;
-	gap: 1.1rem;
-}
-
+/* ---------- 섹션 제목 ---------- */
 .section-head {
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
-	margin-bottom: 1.1rem;
+	gap: var(--s-3);
+	margin-bottom: var(--s-3);
 }
 .section-head h2 {
 	margin: 0;
-	font-size: 1.3rem;
+	font-size: var(--t-1);
 }
 .section-head a {
-	font-size: 0.92rem;
-	font-weight: 600;
+	font-family: var(--mono);
+	font-size: var(--t--1);
 	text-decoration: none;
+}
+.section-head a:hover {
+	text-decoration: underline;
+}
+
+/* ---------- 타일(벤토) ---------- */
+.tile {
+	padding: var(--s-4);
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	transition: border-color 0.2s var(--ease);
+}
+.tile:has(> a:only-child):hover,
+a.tile:hover {
+	border-color: var(--border-strong);
+}
+.tile h2 {
+	font-size: var(--t-1);
+}
+
+/* ---------- 글 목록 ---------- */
+.entries {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.entries li {
+	border-top: 1px solid var(--border);
+}
+.entries li:last-child {
+	border-bottom: 1px solid var(--border);
+}
+.entries a {
+	display: grid;
+	gap: var(--s-1);
+	padding: var(--s-3) 0;
+	color: inherit;
+	text-decoration: none;
+}
+.entries .entry-title {
+	font-size: var(--t-1);
+	font-weight: 600;
+	line-height: 1.4;
+	letter-spacing: -0.01em;
+	transition: color 0.15s var(--ease);
+}
+.entries .entry-desc {
+	font-size: var(--t--1);
+	line-height: 1.6;
+	color: var(--muted);
+}
+.entries a:hover .entry-title {
+	color: var(--accent);
 }
 
 /* ---------- 본문(prose) ---------- */
 .prose {
-	font-size: 1.04rem;
+	font-size: var(--t-0);
 }
 .prose > * + * {
-	margin-top: 1.25em;
+	margin-top: 1.1em;
 }
 .prose p {
-	margin-bottom: 0;
+	margin: 0;
 }
 .prose h2 {
-	margin-top: 2.6em;
-	padding-bottom: 0.4em;
-	font-size: 1.6rem;
-	border-bottom: 1px solid var(--border);
+	margin-top: var(--s-7);
+	font-size: var(--t-2);
+	scroll-margin-top: 80px;
 }
 .prose h3 {
-	margin-top: 2em;
-	font-size: 1.25rem;
+	margin-top: var(--s-5);
+	font-size: var(--t-1);
+	scroll-margin-top: 80px;
 }
 .prose ul,
 .prose ol {
@@ -219,60 +258,67 @@ hr {
 	margin-top: 0.4em;
 }
 .prose li::marker {
-	color: var(--accent);
+	color: var(--muted);
 }
 .prose strong {
 	font-weight: 700;
-	color: var(--text);
 }
 .prose blockquote {
 	margin-left: 0;
 	margin-right: 0;
-	padding: 0.9em 1.2em;
-	font-size: 0.97em;
+	padding: 0 0 0 var(--s-3);
 	color: var(--muted);
-	background: var(--accent-soft);
-	border-left: 4px solid var(--accent);
-	border-radius: 0 12px 12px 0;
+	border-left: 2px solid var(--accent);
 }
 .prose blockquote p {
 	margin: 0;
 }
 .prose :not(pre) > code {
-	padding: 0.15em 0.45em;
-	font-size: 0.88em;
-	color: var(--accent);
-	background: var(--accent-soft);
-	border-radius: 6px;
+	padding: 0.1em 0.4em;
+	font-family: var(--mono);
+	font-size: 0.86em;
+	background: var(--surface-2);
+	border-radius: var(--radius-sm);
 }
 .prose pre {
-	padding: 1.1em 1.3em;
+	padding: var(--s-3) var(--s-4);
 	overflow-x: auto;
-	font-size: 0.88rem;
-	line-height: 1.6;
+	font-size: 0.86rem;
+	line-height: 1.65;
 	border: 1px solid var(--border);
-	border-radius: 12px;
-	box-shadow: var(--shadow);
+	border-radius: var(--radius);
 }
 .prose pre code {
-	padding: 0;
-	color: inherit;
-	background: none;
+	font-family: var(--mono);
+}
+/* Shiki 라이트/다크 두 테마 */
+.astro-code,
+.astro-code span {
+	color: var(--shiki-light);
+	background-color: var(--shiki-light-bg);
+}
+@media (prefers-color-scheme: dark) {
+	html:not([data-theme='light']) .astro-code,
+	html:not([data-theme='light']) .astro-code span {
+		color: var(--shiki-dark);
+		background-color: var(--shiki-dark-bg);
+	}
+}
+html[data-theme='dark'] .astro-code,
+html[data-theme='dark'] .astro-code span {
+	color: var(--shiki-dark);
+	background-color: var(--shiki-dark-bg);
 }
 .prose details {
-	padding: 0;
-	background: var(--surface);
-	border: 1px solid var(--border);
-	border-radius: 14px;
-	box-shadow: var(--shadow);
+	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
 }
 .prose summary {
 	display: flex;
 	align-items: center;
-	gap: 0.6rem;
-	padding: 0.95rem 1.2rem;
-	font-weight: 700;
-	color: var(--text);
+	gap: var(--s-2);
+	padding: var(--s-3) 0;
+	font-weight: 600;
 	cursor: pointer;
 	list-style: none;
 	user-select: none;
@@ -282,83 +328,67 @@ hr {
 }
 .prose summary::before {
 	content: '▸';
-	color: var(--accent);
-	transition: transform 0.2s ease;
+	color: var(--muted);
+	transition: transform 0.15s var(--ease);
 }
 .prose details[open] > summary::before {
 	transform: rotate(90deg);
 }
-.prose details[open] > summary {
-	border-bottom: 1px solid var(--border);
-}
 .prose summary:hover {
 	color: var(--accent);
 }
-.prose details > :not(summary) {
-	margin-left: 1.2rem;
-	margin-right: 1.2rem;
-}
 .prose details > p:first-of-type {
-	margin-top: 1.1rem;
+	margin-top: 0;
 	color: var(--muted);
 	font-size: 0.93rem;
 }
-.prose details > ul:last-child {
-	margin-bottom: 1.2rem;
-}
-.prose details li {
-	font-size: 0.95rem;
+.prose details > :last-child {
+	margin-bottom: var(--s-3);
 }
 .prose img {
 	display: block;
-	margin: 1.8em auto;
-	border: 1px solid var(--border);
-	border-radius: 14px;
-	box-shadow: var(--shadow);
+	margin: var(--s-5) auto;
+	border-radius: var(--radius);
 }
 .prose table {
+	display: block;
 	width: 100%;
+	overflow-x: auto;
 	border-collapse: collapse;
-	font-size: 0.93rem;
-	border-top: 1px solid var(--border);
-	border-bottom: 1px solid var(--border);
+	font-size: 0.92rem;
 }
 .prose th,
 .prose td {
-	padding: 0.7em 0.9em;
+	padding: var(--s-2) var(--s-3);
 	text-align: left;
 	vertical-align: top;
 	border-bottom: 1px solid var(--border);
 }
 .prose th {
-	font-weight: 700;
+	font-weight: 600;
 	white-space: nowrap;
-	background: var(--surface-2);
+	border-bottom-color: var(--border-strong);
 }
 .prose td:first-child {
 	font-weight: 600;
 	white-space: nowrap;
 }
-.prose tbody tr:last-child td {
-	border-bottom: none;
-}
 
 @media (max-width: 720px) {
-	.prose table {
-		font-size: 0.82rem;
-	}
-	.prose th,
-	.prose td {
-		padding: 0.55em 0.5em;
-	}
-	body {
-		font-size: 16px;
-	}
 	main {
-		padding-top: 2.2rem;
+		padding-top: var(--s-5);
 	}
 	.prose h2 {
-		font-size: 1.4rem;
+		margin-top: var(--s-6);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		transition: none !important;
+		animation: none !important;
 	}
 }
 
@@ -375,36 +405,38 @@ hr {
 }
 
 /* ── 공통 폼 요소: 댓글, 비공개 게시판 등이 같이 쓴다 ── */
-/* 컴포넌트 CSS의 display가 hidden 속성을 덮지 않도록 한다. */
 [hidden] {
 	display: none !important;
 }
 .field {
 	width: 100%;
-	padding: 0.65rem 0.85rem;
+	padding: var(--s-2) 12px;
 	font: inherit;
 	font-size: 0.95rem;
 	color: var(--text);
 	background: var(--bg);
-	border: 1px solid var(--border);
-	border-radius: 10px;
+	border: 1px solid var(--border-strong);
+	border-radius: var(--radius-sm);
 	resize: vertical;
 }
 .field:focus {
 	outline: none;
 	border-color: var(--accent);
-	box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .btn-primary {
 	flex-shrink: 0;
-	padding: 0.55rem 1.4rem;
+	padding: var(--s-2) var(--s-3);
 	font: inherit;
-	font-weight: 700;
-	color: #fff;
-	background: var(--grad);
+	font-weight: 600;
+	color: var(--bg);
+	background: var(--text);
 	border: none;
-	border-radius: 999px;
+	border-radius: var(--radius-sm);
 	cursor: pointer;
+	transition: background 0.15s var(--ease);
+}
+.btn-primary:hover {
+	background: var(--accent);
 }
 .btn-primary:disabled {
 	opacity: 0.6;
@@ -413,7 +445,7 @@ hr {
 .btn-link {
 	padding: 0;
 	font: inherit;
-	font-size: 0.9rem;
+	font-size: var(--t--1);
 	color: var(--accent);
 	background: none;
 	border: none;
@@ -426,10 +458,10 @@ hr {
 	color: var(--muted);
 }
 .status.error {
-	color: #e5484d;
+	color: var(--danger);
 }
 .panel {
-	padding: 1.2rem;
+	padding: var(--s-3);
 	background: var(--surface);
 	border: 1px solid var(--border);
 	border-radius: var(--radius);

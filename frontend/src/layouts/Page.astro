@@ -3,19 +3,26 @@ import BaseHead from '@/components/BaseHead.astro';
 import Footer from '@/components/Footer.astro';
 import Header from '@/components/Header.astro';
 
-type Props = { title: string; description: string; noindex?: boolean };
+type Props = {
+	title: string;
+	description: string;
+	noindex?: boolean;
+	/** 넓은 레이아웃(홈 벤토, 목차가 있는 글)일 때 true */
+	wide?: boolean;
+	transitions?: boolean;
+};
 
-const { title, description, noindex = false } = Astro.props;
+const { title, description, noindex = false, wide = false, transitions = true } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="ko">
 	<head>
-		<BaseHead title={title} description={description} noindex={noindex} />
+		<BaseHead title={title} description={description} noindex={noindex} transitions={transitions} />
 	</head>
 	<body>
 		<Header />
-		<main>
+		<main class:list={{ wide }}>
 			<slot />
 		</main>
 		<Footer />

@@ -1,0 +1,92 @@
+---
+// 라이트/다크 전환. 선택은 localStorage('theme')에 두고, 없으면 시스템 설정을 따른다.
+// 첫 그리기 전에 적용하는 코드는 BaseHead의 인라인 스크립트에 있다.
+---
+
+<button class="theme-toggle" type="button" data-theme-toggle aria-label="테마 전환" title="테마 전환">
+	<svg class="sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+		<circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2" />
+		<path
+			d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+		/>
+	</svg>
+	<svg class="moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+		<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+	</svg>
+</button>
+
+<style>
+	.theme-toggle {
+		display: inline-grid;
+		place-items: center;
+		width: 36px;
+		height: 36px;
+		padding: 0;
+		color: var(--muted);
+		background: none;
+		border: 1px solid transparent;
+		border-radius: var(--radius-sm);
+		cursor: pointer;
+		transition:
+			color 0.15s var(--ease),
+			border-color 0.15s var(--ease);
+	}
+	.theme-toggle:hover {
+		color: var(--text);
+		border-color: var(--border);
+	}
+	.theme-toggle svg {
+		grid-area: 1 / 1;
+		transition:
+			opacity 0.2s var(--ease),
+			transform 0.2s var(--ease);
+	}
+	/* 지금 다크면 해를, 라이트면 달을 보여 준다 */
+	.moon {
+		opacity: 1;
+	}
+	.sun {
+		opacity: 0;
+		transform: rotate(-30deg) scale(0.8);
+	}
+	:global(html.is-dark) .moon {
+		opacity: 0;
+		transform: rotate(30deg) scale(0.8);
+	}
+	:global(html.is-dark) .sun {
+		opacity: 1;
+		transform: none;
+	}
+</style>
+
+<script>
+	function currentIsDark() {
+		const t = document.documentElement.dataset.theme;
+		if (t === 'dark') return true;
+		if (t === 'light') return false;
+		return matchMedia('(prefers-color-scheme: dark)').matches;
+	}
+	function reflect() {
+		document.documentElement.classList.toggle('is-dark', currentIsDark());
+	}
+	function init() {
+		reflect();
+		document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+			if (btn.dataset.bound) return;
+			btn.dataset.bound = '1';
+			btn.addEventListener('click', () => {
+				const next = currentIsDark() ? 'light' : 'dark';
+				document.documentElement.dataset.theme = next;
+				localStorage.setItem('theme', next);
+				reflect();
+			});
+		});
+	}
+	init();
+	document.addEventListener('astro:page-load', init);
+	matchMedia('(prefers-color-scheme: dark)').addEventListener('change', reflect);
+</script>

@@ -4,14 +4,15 @@ import type { PrivatePost } from '../lib/types';
 export default function PostList({ posts }: { posts: readonly PrivatePost[] }) {
 	if (!posts.length) return <p className="empty">아직 글이 없습니다.</p>;
 	return (
-		<div className="card-grid">
+		<ol className="entries">
 			{posts.map((p) => (
-				<a key={p.slug} className="card" href={postHref(p.slug)}>
-					<span className="card-meta">{p.pubDate}</span>
-					<h3 className="card-title">{p.title}</h3>
-					<p className="card-desc">{p.description}</p>
-				</a>
+				<li key={p.slug}>
+					<a href={postHref(p.slug)}>
+						<span className="entry-title">{p.title}</span>
+						<span className="entry-desc">{p.description}</span>
+					</a>
+				</li>
 			))}
-		</div>
+		</ol>
 	);
 }
