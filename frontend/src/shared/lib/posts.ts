@@ -4,7 +4,10 @@ export type Post = CollectionEntry<'blog'>;
 
 export type PostWithNeighbors = { post: Post; prev: Post | null; next: Post | null };
 
-/** 최신 글이 먼저, 날짜가 같으면 id 순. 모든 페이지가 이 순서를 쓴다. */
+/**
+ * 최신 글이 먼저, 날짜가 같으면 id 순. 모든 페이지가 이 순서를 쓴다.
+ * 같은 날 여러 글을 올리면 pubDate에 시각까지 적어야 올린 순서가 유지된다. (예: '2026-11-03T02:35:00+09:00')
+ */
 export function comparePosts(a: Post, b: Post): number {
 	return b.data.pubDate.valueOf() - a.data.pubDate.valueOf() || a.id.localeCompare(b.id);
 }
