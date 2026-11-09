@@ -10,11 +10,11 @@ const items = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3)
 {
 	items.length > 1 && (
 		<nav class="toc" aria-label="목차" data-toc>
-			<p class="eyebrow">목차</p>
+			<p class="label">목차</p>
 			<ol>
 				{items.map((h) => (
 					<li class:list={[`d${h.depth}`]}>
-						<a href={`#${h.slug}`}>{h.text}</a>
+						<a href={`#${h.slug}`} title={h.text}>{h.text}</a>
 					</li>
 				))}
 			</ol>
@@ -31,7 +31,7 @@ const items = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3)
 		font-size: var(--t--1);
 		line-height: 1.5;
 	}
-	.toc .eyebrow {
+	.toc .label {
 		margin: 0 0 var(--s-2);
 	}
 	ol {
@@ -43,6 +43,9 @@ const items = Astro.props.headings.filter((h) => h.depth === 2 || h.depth === 3)
 	li a {
 		display: block;
 		padding: var(--s-1) 0 var(--s-1) var(--s-3);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		margin-left: -1px;
 		color: var(--muted);
 		text-decoration: none;

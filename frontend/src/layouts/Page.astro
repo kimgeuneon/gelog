@@ -28,3 +28,11 @@ const { title, description, noindex = false, wide = false, transitions = true } 
 		<Footer />
 	</body>
 </html>
+
+<style is:global>
+	/* 가로 넘침 차단. global.css에도 있지만 html/body를 그리는 이 파일에 함께 둔다. */
+	html,
+	body {
+		overflow-x: clip;
+	}
+</style>

@@ -1,3 +1,10 @@
+/* Hallmark · redesign: polish · shape: kept (bento home, index-first blog) · genre: editorial · theme: brand (Pretendard + JetBrains Mono, one blue) · hero: kept · nav: kept · footer: kept · signature: kept (the post list)
+ * axes: type, colour, chrome, hero, imagery, motion · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · waive 49b · the post titles in the lists · they are the blog content, not controls, and wrap by design on narrow screens */
+/* Hallmark · dismissed 44c · a reading blog: the hero is a greeting and the list is the page, not a landing strip */
+/* Hallmark · dismissed 77 · index pages have one list; a post has its body, nav and comments; no landing sections to add */
+/* Hallmark · dismissed 79 · the first screen is the post list or the article itself, not a visual to grow */
+/* Hallmark · pre-emit critique: P3 H4 E4 S3 R4 V3 · weakest: S, a reading blog could be anyone's; cut the eyebrows and the glued arrows so the type carries it */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
 
@@ -65,10 +72,12 @@
 
 html {
 	scroll-padding-top: 80px;
+	overflow-x: clip;
 }
 
 body {
 	margin: 0;
+	overflow-x: clip;
 	font-family: var(--sans);
 	font-size: var(--t-0);
 	line-height: 1.75;
@@ -109,6 +118,10 @@ a {
 a:hover {
 	text-decoration-thickness: 2px;
 }
+a:active,
+button:active {
+	translate: 0 1px;
+}
 
 :focus-visible {
 	outline: 2px solid var(--accent);
@@ -140,22 +153,11 @@ hr {
 	letter-spacing: 0.01em;
 	color: var(--muted);
 }
-.eyebrow {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--s-2);
-	margin-bottom: var(--s-3);
-	font-family: var(--mono);
+.label {
+	display: block;
+	margin-bottom: var(--s-2);
 	font-size: var(--t--1);
-	text-transform: uppercase;
-	letter-spacing: 0.08em;
 	color: var(--muted);
-}
-.eyebrow::before {
-	content: '';
-	width: 14px;
-	height: 1px;
-	background: var(--accent);
 }
 
 /* ---------- 섹션 제목 ---------- */

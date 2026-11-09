@@ -35,8 +35,6 @@ const { title, description, noindex = false, transitions = true } = Astro.props;
 	(() => {
 		const t = localStorage.getItem('theme');
 		if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
-		const dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
-		document.documentElement.classList.toggle('is-dark', dark);
 	})();
 </script>
 

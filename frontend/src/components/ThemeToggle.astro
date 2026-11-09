@@ -41,25 +41,24 @@
 	}
 	.theme-toggle svg {
 		grid-area: 1 / 1;
-		transition:
-			opacity 0.2s var(--ease),
-			transform 0.2s var(--ease);
 	}
-	/* 지금 다크면 해를, 라이트면 달을 보여 준다 */
-	.moon {
-		opacity: 1;
-	}
+	/* 지금 다크면 해를, 라이트면 달을 보여 준다. 스크립트 없이도 시스템 설정으로 결정된다. */
 	.sun {
-		opacity: 0;
-		transform: rotate(-30deg) scale(0.8);
+		display: none;
 	}
-	:global(html.is-dark) .moon {
-		opacity: 0;
-		transform: rotate(30deg) scale(0.8);
+	@media (prefers-color-scheme: dark) {
+		:global(html:not([data-theme='light'])) .sun {
+			display: block;
+		}
+		:global(html:not([data-theme='light'])) .moon {
+			display: none;
+		}
 	}
-	:global(html.is-dark) .sun {
-		opacity: 1;
-		transform: none;
+	:global(html[data-theme='dark']) .sun {
+		display: block;
+	}
+	:global(html[data-theme='dark']) .moon {
+		display: none;
 	}
 </style>
 
@@ -70,11 +69,7 @@
 		if (t === 'light') return false;
 		return matchMedia('(prefers-color-scheme: dark)').matches;
 	}
-	function reflect() {
-		document.documentElement.classList.toggle('is-dark', currentIsDark());
-	}
 	function init() {
-		reflect();
 		document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
 			if (btn.dataset.bound) return;
 			btn.dataset.bound = '1';
@@ -82,11 +77,9 @@
 				const next = currentIsDark() ? 'light' : 'dark';
 				document.documentElement.dataset.theme = next;
 				localStorage.setItem('theme', next);
-				reflect();
 			});
 		});
 	}
 	init();
 	document.addEventListener('astro:page-load', init);
-	matchMedia('(prefers-color-scheme: dark)').addEventListener('change', reflect);
 </script>

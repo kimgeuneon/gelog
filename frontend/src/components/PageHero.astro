@@ -1,11 +1,10 @@
 ---
-type Props = { lead?: string; eyebrow?: string };
+type Props = { lead?: string };
 
-const { lead, eyebrow } = Astro.props;
+const { lead } = Astro.props;
 ---
 
 <section class="hero">
-	{eyebrow && <p class="eyebrow">{eyebrow}</p>}
 	<h1><slot /></h1>
 	{lead && <p class="lead">{lead}</p>}
 </section>
@@ -14,13 +13,11 @@ const { lead, eyebrow } = Astro.props;
 	.hero {
 		padding-bottom: var(--s-6);
 	}
-	.eyebrow {
-		margin: 0 0 var(--s-3);
-	}
 	h1 {
 		margin: 0;
 		font-size: var(--t-3);
 		line-height: 1.25;
+		text-wrap: balance;
 	}
 	.lead {
 		margin: var(--s-3) 0 0;

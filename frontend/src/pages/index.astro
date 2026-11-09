@@ -13,7 +13,6 @@ const posts = all.slice(0, 5);
 <Page title={SITE_TITLE} description={SITE_DESCRIPTION} wide>
 	<div class="bento">
 		<section class="tile intro">
-			<p class="eyebrow">KRAFTON Robot Learning</p>
 			<h1>
 				안녕하세요, gekim입니다.<br />
 				<span class="muted">괴물이 되는 중.</span>
@@ -23,7 +22,7 @@ const posts = all.slice(0, 5);
 		<section class="tile posts">
 			<div class="section-head">
 				<h2>최근 글<HiddenLink href="/private" label="Private" /></h2>
-				<a href={withBase('/blog')}>전체 {all.length}개 →</a>
+				<a href={withBase('/blog')}>전체 글 {all.length}개 보기</a>
 			</div>
 			<ol class="entries">
 				{posts.map((post) => <PostCard post={post} />)}
@@ -51,6 +50,7 @@ const posts = all.slice(0, 5);
 		margin: 0;
 		font-size: var(--t-4);
 		line-height: 1.15;
+		text-wrap: balance;
 	}
 	.muted {
 		color: var(--muted);

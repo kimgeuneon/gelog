@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # private board plaintext (never commit)
 /private/
+
+# hallmark 검사 결과(스크린샷·기록)
+.hallmark/
